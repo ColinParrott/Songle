@@ -1,9 +1,11 @@
 package colinparrott.com.songle;
 
 import android.Manifest;
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -14,8 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity
         // Get play button
         playButton = (Button) findViewById(R.id.btn_Play);
 
-        // Switch to map activity on play button click
+        // Begin new game setup on play button click
         playButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity
             {
                 triedToPlay = true;
                 Log.d(TAG, "Play button clicked");
-                switchToMap();
+                setupGame();
             }
         });
 
@@ -66,21 +67,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        Log.d(TAG, "App resumed");
-
-        // If the user has tried to play and has granted location permission then start a new game
-        // (this should occur when the user has to manually enable the location permission from clicking the last resort text that appears and comes back to the app to play)
-        if(triedToPlay && haveLocationPermission())
-        {
-            switchToMap();
-        }
-    }
-
-    private void switchToMap()
+    private void setupGame()
     {
         // Ask for location permissions if not already granted
         if (haveLocationPermission())
@@ -103,15 +90,35 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //
     private void loadMapActivity()
     {
-        Log.d(TAG, "Switching to maps activity");
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
+        if(haveInternet())
+        {
+            Log.d(TAG, "Switching to maps activity");
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
+        }
+        else
+        {
+            Toast toast = Toast.makeText(this, "Error. Cannot play without internet connection!", Toast.LENGTH_LONG);
+            toast.show();
+        }
     }
 
+    // Returns true if app has been given Android location tracking permission; false otherwise
     private boolean haveLocationPermission()
     {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    // Returns true if device has internet access; false otherwise
+    // Code adapted from official Android docs
+    private boolean haveInternet()
+    {
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 }
