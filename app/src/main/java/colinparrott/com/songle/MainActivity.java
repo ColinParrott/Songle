@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -18,6 +19,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import colinparrott.com.songle.xml.DownloadXmlTask;
+import colinparrott.com.songle.xml.Song;
+
 public class MainActivity extends AppCompatActivity
 {
 
@@ -25,6 +33,8 @@ public class MainActivity extends AppCompatActivity
     private TextView permissionsLink;
     private boolean triedToPlay = false;
     private static final String TAG = "MainActivity";
+
+    private static final String URL_SONGS_XML = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.xml";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -70,40 +80,78 @@ public class MainActivity extends AppCompatActivity
     private void setupGame()
     {
         // Ask for location permissions if not already granted
-        if (haveLocationPermission())
-        {
-            loadMapActivity();
-        }
-        else
+        if (!haveLocationPermission())
         {
             Log.w(TAG, "Location permission NOT granted. Asking for permission and displaying settings text link.");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
 
-            if(haveLocationPermission())
+        // Check internet
+        if(haveInternet())
+        {
+            List<Song> songs = null;
+
+            try
             {
-                loadMapActivity();
+                songs = new DownloadXmlTask().execute(URL_SONGS_XML).get();
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+            catch (ExecutionException e)
+            {
+                e.printStackTrace();
+            }
+
+            if(songs != null)
+            {
+                Log.d(TAG, "Successfully retrieved and parsed songs.xml");
+            }
+
+        }
+        else
+        {
+            showWarningMessage("Error. Cannot play without internet connection!");
+        }
+
+
+    }
+
+    private void showWarningMessage(String msg)
+    {
+        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_LONG);
+        toast.show();
+    }
+
+    // Override permission request callback to seamlessly continue to load the xml data and start a new game
+    // without the user having to press 'Play' again
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        System.out.println("[onRequestPermissionsResult]:\t" + permissions[0]);
+
+        // Only if location permission was granted
+        if(permissions[0].equals("android.permission.ACCESS_FINE_LOCATION"))
+        {
+            if (requestCode == 1)
+            {
+                setupGame();
             }
             else
             {
                 permissionsLink.setVisibility(View.VISIBLE);
             }
+
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     //
     private void loadMapActivity()
     {
-        if(haveInternet())
-        {
-            Log.d(TAG, "Switching to maps activity");
-            Intent intent = new Intent(this, MapsActivity.class);
-            startActivity(intent);
-        }
-        else
-        {
-            Toast toast = Toast.makeText(this, "Error. Cannot play without internet connection!", Toast.LENGTH_LONG);
-            toast.show();
-        }
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
     }
 
     // Returns true if app has been given Android location tracking permission; false otherwise
