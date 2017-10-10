@@ -35,6 +35,9 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
 
     private static final String URL_SONGS_XML = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.xml";
+    private static final String PREFS_NAME = "userDetails";
+
+    private static GameCreator gameCreator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -107,6 +110,9 @@ public class MainActivity extends AppCompatActivity
             if(songs != null)
             {
                 Log.d(TAG, "Successfully retrieved and parsed songs.xml");
+
+                gameCreator = new GameCreator(getSharedPreferences(PREFS_NAME, MODE_PRIVATE));
+                gameCreator.createGame(songs);
             }
 
         }
