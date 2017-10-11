@@ -5,4 +5,10 @@
     <string name="btntxt_Options">Options</string>
     <string name="title_activity_maps">Map</string>
     <string name="txt_Permissions"><u>ENABLE LOCATION PERMISSION HERE TO PLAY</u></string>
+
+    <string name="desc_unclassified">Unclassified</string>
+    <string name="desc_boring">Boring</string>
+    <string name="desc_notboring">Not boring</string>
+    <string name="desc_interesting">Interesting</string>
+    <string name="desc_veryinteresting">Very interesting</string>
 </resources>

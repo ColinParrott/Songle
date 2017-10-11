@@ -96,11 +96,7 @@ public class MainActivity extends AppCompatActivity
             {
                 songs = new DownloadXmlTask().execute(URL_SONGS_XML).get();
             }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-            catch (ExecutionException e)
+            catch (InterruptedException | ExecutionException e)
             {
                 e.printStackTrace();
             }

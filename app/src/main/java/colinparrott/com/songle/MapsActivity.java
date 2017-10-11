@@ -19,38 +19,32 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.maps.android.data.kml.KmlLayer;
 
-import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
 
-import colinparrott.com.songle.xml.DownloadKmlTask;
+import colinparrott.com.songle.kml.SongleKmlParser;
+import colinparrott.com.songle.maps.SongleMap;
+import colinparrott.com.songle.maps.SongleMarkerInfo;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener
+{
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-
     private boolean mLocationPermissionGranted = false;
+    private boolean setInitialLocation = false;
     private Location mLastLocation;
-    private Marker mCurrLocationMarker;
+
 
     private final float defaultLat = 55.9316097f;
     private final float defaultLong = -3.1247421f;
     private static final String TAG = "MapsActivity";
 
-    private static final String KML_URL_BASE = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/";
-    private int songNum;
 
-    private static boolean setInitialLocation = false;
+    private int songNum;
+    private SongleMap songleMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -62,35 +56,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         songNum = intent.getIntExtra(GameCreator.SONG_NUM_MSG, -1);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        if (mGoogleApiClient == null) {
+        if (mGoogleApiClient == null)
+        {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
         }
+
     }
 
     @Override
-    protected void onStart() {
+    protected void onStart()
+    {
         super.onStart();
         mGoogleApiClient.connect();
     }
 
     @Override
-    protected void onStop() {
+    protected void onStop()
+    {
         super.onStop();
 
-        if (mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient.isConnected())
+        {
             mGoogleApiClient.disconnect();
         }
     }
 
-    protected void createLocationRequest() {
+    protected void createLocationRequest()
+    {
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(5000);
         mLocationRequest.setFastestInterval(1000);
@@ -98,7 +97,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         int permissionsCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
 
-        if (permissionsCheck == PackageManager.PERMISSION_GRANTED) {
+        if (permissionsCheck == PackageManager.PERMISSION_GRANTED)
+        {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
     }
@@ -114,7 +114,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap)
+    {
         mMap = googleMap;
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED )
@@ -127,7 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLat, defaultLong), 18f));
-        loadGameMapData(songNum);
+        loadGameMapData();
 
     }
 
@@ -177,39 +178,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 18f));
             setInitialLocation = true;
         }
+
+
     }
 
-    private void loadGameMapData(int songNum)
+    private void loadGameMapData()
     {
+        SongleKmlParser parser = new SongleKmlParser();
+        ArrayList<SongleMarkerInfo> markerInfos = parser.parse(mMap, this, songNum, 5);
 
-        String songNumString = formatNumber(songNum);
-        String mapUrl = KML_URL_BASE + songNumString + "/map1.txt";
-        System.out.println(mapUrl);
-
-
-        try
-        {
-            String kmlString = new DownloadKmlTask().execute(mapUrl).get();
-            InputStream stream = new ByteArrayInputStream(kmlString.getBytes(StandardCharsets.UTF_8.name()));
-            KmlLayer kmlLayer = new KmlLayer(mMap, stream, getApplicationContext());
-            kmlLayer.addLayerToMap();
-        }
-        catch (InterruptedException | ExecutionException | XmlPullParserException | IOException e)
-        {
-            e.printStackTrace();
-        }
+        songleMap = new SongleMap(songNum, markerInfos, mMap, this);
+        songleMap.Initialise();
     }
 
-    // Converts int to string and adds a "0" in front if number is single digit
-    private String formatNumber(int num)
-    {
-        String numString = String.valueOf(num);
 
-        if(songNum <= 9)
-        {
-            numString = "0" + songNum;
-        }
-
-        return numString;
-    }
 }
