@@ -7,18 +7,16 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -111,7 +109,7 @@ public class MainActivity extends AppCompatActivity
             {
                 Log.d(TAG, "Successfully retrieved and parsed songs.xml");
 
-                gameCreator = new GameCreator(getSharedPreferences(PREFS_NAME, MODE_PRIVATE));
+                gameCreator = new GameCreator(this, getSharedPreferences(PREFS_NAME, MODE_PRIVATE));
                 gameCreator.createGame(songs);
             }
 
@@ -153,12 +151,6 @@ public class MainActivity extends AppCompatActivity
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    //
-    private void loadMapActivity()
-    {
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
-    }
 
     // Returns true if app has been given Android location tracking permission; false otherwise
     private boolean haveLocationPermission()

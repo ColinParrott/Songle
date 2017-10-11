@@ -1,27 +1,106 @@
 package colinparrott.com.songle;
 
-import android.support.v4.app.FragmentActivity;
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.maps.android.data.kml.KmlLayer;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
+
+import colinparrott.com.songle.xml.DownloadKmlTask;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleMap mMap;
+    private GoogleApiClient mGoogleApiClient;
+    private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+
+    private boolean mLocationPermissionGranted = false;
+    private Location mLastLocation;
+    private Marker mCurrLocationMarker;
+
+    private final float defaultLat = 55.9316097f;
+    private final float defaultLong = -3.1247421f;
+    private static final String TAG = "MapsActivity";
+
+    private static final String KML_URL_BASE = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/";
+    private int songNum;
+
+    private static boolean setInitialLocation = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        Intent intent = getIntent();
+        songNum = intent.getIntExtra(GameCreator.SONG_NUM_MSG, -1);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    protected void createLocationRequest() {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        int permissionsCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (permissionsCheck == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
     }
 
 
@@ -38,9 +117,99 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED )
+        {
+            mMap.setMyLocationEnabled(true);
+        }
+        else
+        {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLat, defaultLong), 18f));
+        loadGameMapData(songNum);
+
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint)
+    {
+        try
+        {
+            createLocationRequest();
+        }
+        catch(java.lang.IllegalStateException ise)
+        {
+            System.out.println("IllegalStateException thrown [onConnected]");
+        }
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        }
+        else
+        {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int flag)
+    {
+        System.out.println(">>>> onConnectionSuspended");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult)
+    {
+        System.out.println(">>>> onConnectionFailed");
+    }
+
+    @Override
+    public void onLocationChanged(Location current)
+    {
+        System.out.println("[onLocationChanged] Lat/long now: (" + String.valueOf(current.getLatitude()) + "," + String.valueOf(current.getLongitude()) + ")" );
+        mLastLocation = current;
+
+        if(!setInitialLocation)
+        {
+            LatLng currentLatLng = new LatLng(current.getLatitude(), current.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 18f));
+            setInitialLocation = true;
+        }
+    }
+
+    private void loadGameMapData(int songNum)
+    {
+
+        String songNumString = formatNumber(songNum);
+        String mapUrl = KML_URL_BASE + songNumString + "/map1.txt";
+        System.out.println(mapUrl);
+
+
+        try
+        {
+            String kmlString = new DownloadKmlTask().execute(mapUrl).get();
+            InputStream stream = new ByteArrayInputStream(kmlString.getBytes(StandardCharsets.UTF_8.name()));
+            KmlLayer kmlLayer = new KmlLayer(mMap, stream, getApplicationContext());
+            kmlLayer.addLayerToMap();
+        }
+        catch (InterruptedException | ExecutionException | XmlPullParserException | IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    // Converts int to string and adds a "0" in front if number is single digit
+    private String formatNumber(int num)
+    {
+        String numString = String.valueOf(num);
+
+        if(songNum <= 9)
+        {
+            numString = "0" + songNum;
+        }
+
+        return numString;
     }
 }

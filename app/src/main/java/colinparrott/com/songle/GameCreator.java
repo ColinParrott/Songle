@@ -1,11 +1,11 @@
 package colinparrott.com.songle;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import colinparrott.com.songle.xml.Song;
 
@@ -19,22 +19,29 @@ public class GameCreator
     private SharedPreferences userPrefs;
     private UserPrefsManager userPrefsManager;
 
-    public GameCreator(SharedPreferences userPrefs)
+    private Context mainContext;
+
+
+    public static final String SONG_NUM_MSG = "com.songle.gamecreator.SONGNUM";
+
+    public GameCreator(Context context, SharedPreferences userPrefs)
     {
         this.userPrefs = userPrefs;
+        this.mainContext = context;
         userPrefsManager = new UserPrefsManager(userPrefs);
     }
 
     public void createGame(List<Song> songList)
     {
 
-        for(Song s : songList)
-        {
-            System.out.println(s.getNumber() + "\t" + s.getTitle() + "\t" + s.getArtist() + "\t" + s.getLink() + "\n");
-        }
+//        for(Song s : songList)
+//        {
+//            System.out.println(s.getNumber() + "\t" + s.getTitle() + "\t" + s.getArtist() + "\t" + s.getLink() + "\n");
+//        }
 
         Song chosenSong = chooseSong(songList);
-        System.out.println("Chosen: " + chosenSong.getTitle());
+        System.out.println("Chosen: " + chosenSong.getNumber() + " " + chosenSong.getTitle());
+        loadMapActivity(chosenSong.getNumber());
 
     }
 
@@ -56,6 +63,13 @@ public class GameCreator
         return song;
     }
 
+    //
+    private void loadMapActivity(int songNum)
+    {
+        Intent intent = new Intent(mainContext, MapsActivity.class);
+        intent.putExtra(SONG_NUM_MSG, songNum);
+        mainContext.startActivity(intent);
+    }
 
 
 }

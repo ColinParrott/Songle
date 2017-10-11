@@ -4,6 +4,7 @@ package colinparrott.com.songle.xml;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.apache.commons.io.IOUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -12,13 +13,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-public class DownloadXmlTask extends AsyncTask<String, Void, List<Song>>
+public class DownloadKmlTask extends AsyncTask<String, Void, String>
 {
 
-    private static final String TAG = "DownloadXmlTask";
+    private static final String TAG = "DownloadKmlTask";
 
     @Override
-    protected List<Song> doInBackground(String... urls)
+    protected String doInBackground(String... urls)
     {
         try
         {
@@ -37,12 +38,12 @@ public class DownloadXmlTask extends AsyncTask<String, Void, List<Song>>
     }
 
     @Override
-    protected void onPostExecute(List<Song> result)
+    protected void onPostExecute(String result)
     {
         //System.out.println("Download complete\n" + result);
     }
 
-    private List<Song> loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException
+    private String loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException
     {
         StringBuilder result = new StringBuilder();
         List<Song> songList = null;
@@ -50,11 +51,10 @@ public class DownloadXmlTask extends AsyncTask<String, Void, List<Song>>
 
         try(InputStream stream = downloadUrl(urlString))
         {
-            SongsXmlParser xmlParser = new SongsXmlParser();
-            songList = xmlParser.parse(stream);
+            String kmlString = IOUtils.toString(stream, "utf-8");
+            return kmlString;
         }
 
-        return songList;
     }
 
     private InputStream downloadUrl(String urlString) throws IOException
