@@ -179,6 +179,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             setInitialLocation = true;
         }
 
+        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        songleMap.update(latLng);
 
     }
 
