@@ -29,21 +29,60 @@ import colinparrott.com.songle.maps.SongleMarkerInfo;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener
 {
-
+    /**
+     * Map object for the game
+     */
     private GoogleMap mMap;
+
+    /**
+     * API client
+     */
     private GoogleApiClient mGoogleApiClient;
+
+    /**
+     *
+     */
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+
+    /**
+     * Tracks whether we have been granted location permission or not
+     */
     private boolean mLocationPermissionGranted = false;
+
+    /**
+     * Whether we've set the user's first ever location
+     */
     private boolean setInitialLocation = false;
+
+    /**
+     * Tracks user's location
+     */
     private Location mLastLocation;
 
 
+    /**
+     * Default latitude to load map at
+     */
     private final float defaultLat = 55.9316097f;
+
+    /**
+     * Default longitude to load map at
+     */
     private final float defaultLong = -3.1247421f;
+
+    /**
+     * Tag for debugging
+     */
     private static final String TAG = "MapsActivity";
 
-
+    /**
+     * Chosen song number for this game instance
+     */
     private int songNum;
+
+    /**
+     * SongleMap object that manipulates the map with the game logic
+     */
     private SongleMap songleMap;
 
     @Override
@@ -172,6 +211,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         System.out.println("[onLocationChanged] Lat/long now: (" + String.valueOf(current.getLatitude()) + "," + String.valueOf(current.getLongitude()) + ")" );
         mLastLocation = current;
 
+        // If we haven't set the initial location move the camera to the user's location
         if(!setInitialLocation)
         {
             LatLng currentLatLng = new LatLng(current.getLatitude(), current.getLongitude());
@@ -180,10 +220,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+
+        // Call songleMap to update map
         songleMap.update(latLng);
 
     }
 
+    /**
+     * Creates a SongleMap object for game logic
+     */
     private void loadGameMapData()
     {
         SongleKmlParser parser = new SongleKmlParser();

@@ -12,6 +12,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
+/**
+ * AsyncTask to download Songs.xml, calls class to parse it and returns a list of Song objects
+ */
+
 public class DownloadXmlTask extends AsyncTask<String, Void, List<Song>>
 {
 
@@ -44,12 +48,12 @@ public class DownloadXmlTask extends AsyncTask<String, Void, List<Song>>
 
     private List<Song> loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException
     {
-        StringBuilder result = new StringBuilder();
         List<Song> songList = null;
 
 
         try(InputStream stream = downloadUrl(urlString))
         {
+            // Parse songs from InputStream
             SongsXmlParser xmlParser = new SongsXmlParser();
             songList = xmlParser.parse(stream);
         }

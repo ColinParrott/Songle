@@ -15,13 +15,20 @@ import java.util.List;
 import colinparrott.com.songle.xml.Song;
 
 /**
- * Created by Colin on 11/10/2017.
+ * AsyncTask for downloading lyrics - returns a String
  */
 
 public class DownloadLyricsTask extends AsyncTask<String, Void, String>
 {
 
+    /**
+     * Tag for debugging.
+     */
     private static final String TAG = "DownloadLyricsTask";
+
+    /**
+     * Base URL for lyric files
+     */
     private static final String BASE_LYRICS_URL = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/";
 
     @Override
@@ -50,8 +57,8 @@ public class DownloadLyricsTask extends AsyncTask<String, Void, String>
 
         try(InputStream stream = downloadUrl(urlString))
         {
-            String lyricsString = IOUtils.toString(stream, "utf-8");
-            return lyricsString;
+            // Convert to String and return
+            return IOUtils.toString(stream, "utf-8");
         }
 
     }

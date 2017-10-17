@@ -13,10 +13,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
+/**
+ * AsyncTask to download KML file and return a String
+ */
+
 public class DownloadKmlTask extends AsyncTask<String, Void, String>
 {
 
+    /**
+     * Tag for debugging
+     */
     private static final String TAG = "DownloadKmlTask";
+
 
     @Override
     protected String doInBackground(String... urls)
@@ -45,14 +53,14 @@ public class DownloadKmlTask extends AsyncTask<String, Void, String>
 
     private String loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException
     {
-        StringBuilder result = new StringBuilder();
-        List<Song> songList = null;
+//        StringBuilder result = new StringBuilder();
+//        List<Song> songList = null;
 
 
         try(InputStream stream = downloadUrl(urlString))
         {
-            String kmlString = IOUtils.toString(stream, "utf-8");
-            return kmlString;
+            // Convert stream to String and return it
+            return IOUtils.toString(stream, "utf-8");
         }
 
     }
