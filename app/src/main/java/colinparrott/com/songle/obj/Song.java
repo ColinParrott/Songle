@@ -1,10 +1,12 @@
 package colinparrott.com.songle.obj;
 
+import java.io.Serializable;
+
 /**
  * Object to represent a Song
  */
 
-public class Song
+public class Song implements Serializable
 {
     /**
      * Number of song in songs.xml

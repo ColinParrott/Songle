@@ -35,7 +35,7 @@ public class GameCreator
     /**
      * Identifier to use with the Intent for passing the selected song number to the MapsActivity
      */
-    public static final String SONG_NUM_MSG = "com.songle.gamecreator.SONGNUM";
+    public static final String SONG_MSG = "com.songle.gamecreator.SONG";
 
     public GameCreator(Context context, SharedPreferences userPrefs)
     {
@@ -52,7 +52,7 @@ public class GameCreator
     {
         Song chosenSong = chooseSong(songList);
         System.out.println("Chosen: " + chosenSong.getNumber() + " " + chosenSong.getTitle());
-        loadMapActivity(chosenSong.getNumber());
+        loadMapActivity(chosenSong);
     }
 
     /**
@@ -80,12 +80,12 @@ public class GameCreator
 
     /**
      * Load MapActivity and pass chosen song
-     * @param songNum Number of chosen song
+     * @param song Chosen song
      */
-    private void loadMapActivity(int songNum)
+    private void loadMapActivity(Song song)
     {
         Intent intent = new Intent(mainContext, MapsActivity.class);
-        intent.putExtra(SONG_NUM_MSG, songNum);
+        intent.putExtra(SONG_MSG, song);
         mainContext.startActivity(intent);
     }
 

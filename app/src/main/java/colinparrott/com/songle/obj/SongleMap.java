@@ -21,9 +21,9 @@ import colinparrott.com.songle.R;
 public class SongleMap
 {
     /**
-     * Song number this map represents
+     * Song this map represents
      */
-    private int songNum;
+    private Song song;
 
     /**
      * List of SongleMarkerInfos that represent each lyric and their positions to attach to actual markers
@@ -60,9 +60,9 @@ public class SongleMap
      */
     private ArrayList<String> foundWords;
 
-    public SongleMap(int songNum, ArrayList<SongleMarkerInfo> wordMarkers, GoogleMap map, Activity mapActivity)
+    public SongleMap(Song song, ArrayList<SongleMarkerInfo> wordMarkers, GoogleMap map, Activity mapActivity)
     {
-        this.songNum = songNum;
+        this.song = song;
         this.markerInfos = wordMarkers;
         this.map = map;
         this.mapActivity = mapActivity;
@@ -193,8 +193,29 @@ public class SongleMap
             case VERY_INTERESTING:
                 return mapActivity.getString(R.string.desc_veryinteresting);
             default:
+
                 return mapActivity.getString(R.string.desc_unclassified);
         }
+    }
+
+    public void handleGuess(String songGuessed)
+    {
+        System.out.println("USER GUESSED: " + songGuessed);
+        System.out.println("GUESS CORRECT: " + guessCorrect(songGuessed));
+    }
+
+    private boolean guessCorrect(String guess)
+    {
+        String actualSong = normaliseString(song.getTitle());
+        guess = normaliseString(guess);
+
+        return guess.equals(actualSong);
+
+    }
+
+    private String normaliseString(String s)
+    {
+        return s.replaceAll("\\p{P}", "").toLowerCase().trim();
     }
 
 }

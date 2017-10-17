@@ -3,6 +3,7 @@ package colinparrott.com.songle;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -10,6 +11,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 
 import com.google.android.gms.common.ConnectionResult;
@@ -23,9 +29,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-
 import java.util.ArrayList;
 
+import colinparrott.com.songle.obj.Song;
 import colinparrott.com.songle.parsers.SongleKmlParser;
 import colinparrott.com.songle.obj.SongleMap;
 import colinparrott.com.songle.obj.SongleMarkerInfo;
@@ -78,14 +84,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String TAG = "MapsActivity";
 
     /**
-     * Chosen song number for this game instance
+     * Chosen song for this game instance
      */
-    private int songNum;
+    private Song song;
 
     /**
      * SongleMap object that manipulates the map with the game logic
      */
     private SongleMap songleMap;
+
+    /**
+     * Button pressed to guess song
+     */
+    private Button guessButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -93,8 +104,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        // Get song object passed from GameCreator
         Intent intent = getIntent();
-        songNum = intent.getIntExtra(GameCreator.SONG_NUM_MSG, -1);
+        song = (Song) intent.getSerializableExtra(GameCreator.SONG_MSG);
+
+        guessButton = findViewById(R.id.btn_guess);
+        guessButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                System.out.println("GUESS BUTTON PRESSED");
+                onGuessButtonPressed();
+            }
+        });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -127,6 +152,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             mGoogleApiClient.disconnect();
         }
+    }
+
+    private void onGuessButtonPressed()
+    {
+        LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
+        View prompt = layoutInflater.inflate(R.layout.dialog_guess, null);
+        AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
+        promptBuilder.setView(prompt);
+
+        final EditText editText = (EditText) prompt.findViewById(R.id.edit_guess);
+
+        promptBuilder.setCancelable(true)
+                .setPositiveButton("Guess", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        songleMap.handleGuess(editText.getText().toString());
+                    }
+                })
+                .setNegativeButton("Cancel", null);
+
+        promptBuilder.create().show();
     }
 
     // Override back button press to make sure user wants to quit game
@@ -259,10 +307,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
 
         SongleKmlParser parser = new SongleKmlParser();
-        ArrayList<SongleMarkerInfo> markerInfos = parser.parse(mMap, this, songNum, 5);
-        System.out.println("INITIAL DOWNLOADING DONE");
+        ArrayList<SongleMarkerInfo> markerInfos = parser.parse(mMap, this, song.getNumber(), 5);
 
-        songleMap = new SongleMap(songNum, markerInfos, mMap, this);
+        songleMap = new SongleMap(song, markerInfos, mMap, this);
         songleMap.Initialise();
     }
 

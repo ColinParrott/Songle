@@ -104,7 +104,7 @@ public class SongsXmlParser
             }
         }
 
-        return new Song(number, title, artist, link);
+        return new Song(number, artist, title, link);
     }
 
     private int readSongNumber(XmlPullParser parser) throws XmlPullParserException, IOException
