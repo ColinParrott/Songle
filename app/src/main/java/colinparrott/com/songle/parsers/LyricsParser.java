@@ -1,6 +1,6 @@
-package colinparrott.com.songle.kml;
+package colinparrott.com.songle.parsers;
 
-import colinparrott.com.songle.maps.LyricPointer;
+import colinparrott.com.songle.obj.LyricPointer;
 
 /**
  * Utility class for parsing lyrics

@@ -1,4 +1,4 @@
-package colinparrott.com.songle.maps;
+package colinparrott.com.songle.obj;
 
 /**
  * Object that represents the position of a word in a lyrics file

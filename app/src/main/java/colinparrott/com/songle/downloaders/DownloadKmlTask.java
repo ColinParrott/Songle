@@ -1,4 +1,5 @@
-package colinparrott.com.songle.kml;
+package colinparrott.com.songle.downloaders;
+
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -12,31 +13,25 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-import colinparrott.com.songle.xml.Song;
-
 /**
- * AsyncTask for downloading lyrics - returns a String
+ * AsyncTask to download KML file and return a String
  */
 
-public class DownloadLyricsTask extends AsyncTask<String, Void, String>
+public class DownloadKmlTask extends AsyncTask<String, Void, String>
 {
 
     /**
-     * Tag for debugging.
+     * Tag for debugging
      */
-    private static final String TAG = "DownloadLyricsTask";
+    private static final String TAG = "DownloadKmlTask";
 
-    /**
-     * Base URL for lyric files
-     */
-    private static final String BASE_LYRICS_URL = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/";
 
     @Override
-    protected String doInBackground(String... nums)
+    protected String doInBackground(String... urls)
     {
         try
         {
-            return loadLyricsFromNetwork(BASE_LYRICS_URL + nums[0] + "/words.txt");
+            return loadXmlFromNetwork(urls[0]);
         }
         catch (IOException e)
         {
@@ -50,19 +45,25 @@ public class DownloadLyricsTask extends AsyncTask<String, Void, String>
         }
     }
 
-    private String loadLyricsFromNetwork(String urlString) throws XmlPullParserException, IOException
+    @Override
+    protected void onPostExecute(String result)
     {
-        StringBuilder result = new StringBuilder();
+        //System.out.println("Download complete\n" + result);
+    }
+
+    private String loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException
+    {
+//        StringBuilder result = new StringBuilder();
+//        List<Song> songList = null;
 
 
         try(InputStream stream = downloadUrl(urlString))
         {
-            // Convert to String and return
+            // Convert stream to String and return it
             return IOUtils.toString(stream, "utf-8");
         }
 
     }
-
 
     private InputStream downloadUrl(String urlString) throws IOException
     {

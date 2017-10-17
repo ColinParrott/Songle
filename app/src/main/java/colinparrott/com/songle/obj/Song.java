@@ -1,4 +1,4 @@
-package colinparrott.com.songle.xml;
+package colinparrott.com.songle.obj;
 
 /**
  * Object to represent a Song

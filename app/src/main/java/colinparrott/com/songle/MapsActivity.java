@@ -23,9 +23,9 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
-import colinparrott.com.songle.kml.SongleKmlParser;
-import colinparrott.com.songle.maps.SongleMap;
-import colinparrott.com.songle.maps.SongleMarkerInfo;
+import colinparrott.com.songle.parsers.SongleKmlParser;
+import colinparrott.com.songle.obj.SongleMap;
+import colinparrott.com.songle.obj.SongleMarkerInfo;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener
 {

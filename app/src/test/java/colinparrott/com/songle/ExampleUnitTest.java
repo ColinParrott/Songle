@@ -2,9 +2,6 @@ package colinparrott.com.songle;
 
 import org.junit.Test;
 
-import colinparrott.com.songle.kml.SongleKmlParser;
-import colinparrott.com.songle.maps.LyricPointer;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 

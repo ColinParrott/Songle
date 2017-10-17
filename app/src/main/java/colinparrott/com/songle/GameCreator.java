@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import java.util.List;
 import java.util.Random;
 
-import colinparrott.com.songle.xml.Song;
+import colinparrott.com.songle.obj.Song;
 
 /**
  * Class called by MainActivity deals with creating a new game

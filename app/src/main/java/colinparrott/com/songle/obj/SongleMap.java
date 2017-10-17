@@ -1,4 +1,4 @@
-package colinparrott.com.songle.maps;
+package colinparrott.com.songle.obj;
 
 import android.app.Activity;
 import android.widget.Toast;

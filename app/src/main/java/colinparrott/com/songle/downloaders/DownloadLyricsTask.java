@@ -1,32 +1,39 @@
-package colinparrott.com.songle.xml;
-
+package colinparrott.com.songle.downloaders;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.apache.commons.io.IOUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 
 /**
- * AsyncTask to download Songs.xml, calls class to parse it and returns a list of Song objects
+ * AsyncTask for downloading lyrics - returns a String
  */
 
-public class DownloadXmlTask extends AsyncTask<String, Void, List<Song>>
+public class DownloadLyricsTask extends AsyncTask<String, Void, String>
 {
 
-    private static final String TAG = "DownloadXmlTask";
+    /**
+     * Tag for debugging.
+     */
+    private static final String TAG = "DownloadLyricsTask";
+
+    /**
+     * Base URL for lyric files
+     */
+    private static final String BASE_LYRICS_URL = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/";
 
     @Override
-    protected List<Song> doInBackground(String... urls)
+    protected String doInBackground(String... nums)
     {
         try
         {
-            return loadXmlFromNetwork(urls[0]);
+            return loadLyricsFromNetwork(BASE_LYRICS_URL + nums[0] + "/words.txt");
         }
         catch (IOException e)
         {
@@ -40,26 +47,19 @@ public class DownloadXmlTask extends AsyncTask<String, Void, List<Song>>
         }
     }
 
-    @Override
-    protected void onPostExecute(List<Song> result)
+    private String loadLyricsFromNetwork(String urlString) throws XmlPullParserException, IOException
     {
-        //System.out.println("Download complete\n" + result);
-    }
-
-    private List<Song> loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException
-    {
-        List<Song> songList = null;
+        StringBuilder result = new StringBuilder();
 
 
         try(InputStream stream = downloadUrl(urlString))
         {
-            // Parse songs from InputStream
-            SongsXmlParser xmlParser = new SongsXmlParser();
-            songList = xmlParser.parse(stream);
+            // Convert to String and return
+            return IOUtils.toString(stream, "utf-8");
         }
 
-        return songList;
     }
+
 
     private InputStream downloadUrl(String urlString) throws IOException
     {

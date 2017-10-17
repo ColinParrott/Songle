@@ -1,4 +1,4 @@
-package colinparrott.com.songle.kml;
+package colinparrott.com.songle.parsers;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,7 +8,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.data.kml.KmlContainer;
 import com.google.maps.android.data.kml.KmlLayer;
 import com.google.maps.android.data.kml.KmlPlacemark;
-import com.google.maps.android.data.kml.KmlPoint;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -19,10 +18,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-import colinparrott.com.songle.maps.LyricPointer;
-import colinparrott.com.songle.maps.SongleMarkerInfo;
-import colinparrott.com.songle.maps.WordImportance;
-import colinparrott.com.songle.xml.DownloadKmlTask;
+import colinparrott.com.songle.downloaders.DownloadLyricsTask;
+import colinparrott.com.songle.obj.LyricPointer;
+import colinparrott.com.songle.obj.SongleMarkerInfo;
+import colinparrott.com.songle.obj.WordImportance;
+import colinparrott.com.songle.downloaders.DownloadKmlTask;
 
 /**
  * Class that downloads and parses KML files

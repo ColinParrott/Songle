@@ -1,4 +1,4 @@
-package colinparrott.com.songle.xml;
+package colinparrott.com.songle.parsers;
 
 import android.util.Xml;
 
@@ -10,15 +10,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import colinparrott.com.songle.obj.Song;
+
 /**
  * Created by Colin on 10/10/2017.
  */
 
-class SongsXmlParser
+public class SongsXmlParser
 {
     private static final String ns = null;
 
-    List<Song> parse(InputStream in) throws XmlPullParserException, IOException
+    public List<Song> parse(InputStream in) throws XmlPullParserException, IOException
     {
         try
         {

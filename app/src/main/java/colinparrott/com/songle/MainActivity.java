@@ -22,8 +22,8 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import colinparrott.com.songle.xml.DownloadXmlTask;
-import colinparrott.com.songle.xml.Song;
+import colinparrott.com.songle.downloaders.DownloadXmlTask;
+import colinparrott.com.songle.obj.Song;
 
 public class MainActivity extends AppCompatActivity
 {
