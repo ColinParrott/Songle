@@ -1,6 +1,7 @@
 package colinparrott.com.songle;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -16,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,13 +27,18 @@ import java.util.concurrent.ExecutionException;
 import colinparrott.com.songle.downloaders.DownloadXmlTask;
 import colinparrott.com.songle.obj.Song;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends Activity
 {
 
     /**
      * Play button object
      */
     private Button playButton;
+
+    /**
+     * ProgressBar object
+      */
+    private ProgressBar progressBar;
 
     /**
      * TextView to click when permission requests have been disabled by user
@@ -63,6 +70,11 @@ public class MainActivity extends AppCompatActivity
      */
     private static GameCreator gameCreator;
 
+    /**
+     *
+     */
+    private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -70,6 +82,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        progressBar = (ProgressBar) findViewById(R.id.progBar);
 
         // Get play button
         playButton = (Button) findViewById(R.id.btn_Play);
@@ -106,6 +120,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onResume()
+    {
+        progressBar.setVisibility(View.INVISIBLE);
+        super.onResume();
+    }
+
     /**
      * Checks if we have location permission and internet connection before continuing.
      * Once satisfied uses GameCreator to continue.
@@ -118,33 +139,37 @@ public class MainActivity extends AppCompatActivity
             Log.w(TAG, "Location permission NOT granted. Asking for permission and displaying settings text link.");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
-
-        // Check internet
-        if(haveInternet())
-        {
-            List<Song> songs = null;
-
-            try
-            {
-                songs = new DownloadXmlTask().execute(URL_SONGS_XML).get();
-            }
-            catch (InterruptedException | ExecutionException e)
-            {
-                e.printStackTrace();
-            }
-
-            if(songs != null)
-            {
-                Log.d(TAG, "Successfully retrieved and parsed songs.xml");
-
-                gameCreator = new GameCreator(this, getSharedPreferences(PREFS_NAME, MODE_PRIVATE));
-                gameCreator.createGame(songs);
-            }
-
-        }
         else
         {
-            showWarningMessage("Error. Cannot play without internet connection!");
+            // Check internet
+            if(haveInternet())
+            {
+                List<Song> songs = null;
+
+                progressBar.setVisibility(View.VISIBLE);
+
+                try
+                {
+                    songs = new DownloadXmlTask().execute(URL_SONGS_XML).get();
+                }
+                catch (InterruptedException | ExecutionException e)
+                {
+                    e.printStackTrace();
+                }
+
+                if(songs != null)
+                {
+                    Log.d(TAG, "Successfully retrieved and parsed songs.xml");
+
+                    gameCreator = new GameCreator(this, getSharedPreferences(PREFS_NAME, MODE_PRIVATE));
+                    gameCreator.createGame(songs);
+                }
+
+            }
+            else
+            {
+                showWarningMessage("Error. Cannot play without internet connection!");
+            }
         }
 
 
@@ -173,7 +198,8 @@ public class MainActivity extends AppCompatActivity
         // Only if location permission was granted
         if(permissions[0].equals("android.permission.ACCESS_FINE_LOCATION"))
         {
-            if (requestCode == 1)
+            System.out.println("GRANT RESULTS: " + grantResults[0]);
+            if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
                 setupGame();
             }

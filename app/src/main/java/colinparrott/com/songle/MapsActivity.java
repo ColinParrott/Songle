@@ -1,6 +1,7 @@
 package colinparrott.com.songle;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -8,6 +9,8 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -58,7 +61,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Tracks user's location
      */
     private Location mLastLocation;
-
 
     /**
      * Default latitude to load map at
@@ -125,6 +127,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             mGoogleApiClient.disconnect();
         }
+    }
+
+    // Override back button press to make sure user wants to quit game
+    @Override
+    public void onBackPressed()
+    {
+        System.out.println("back pressed");
+
+        // If yes go back by calling super's method if not, close window and do nothing
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        builder.setTitle("Do you want to quit?");
+        builder.setMessage("All progress will be lost!");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        MapsActivity.super.onBackPressed();
+                    }
+                });
+
+                builder.setNegativeButton("No", null);
+        builder.show();
     }
 
     protected void createLocationRequest()
@@ -231,8 +257,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void loadGameMapData()
     {
+
         SongleKmlParser parser = new SongleKmlParser();
         ArrayList<SongleMarkerInfo> markerInfos = parser.parse(mMap, this, songNum, 5);
+        System.out.println("INITIAL DOWNLOADING DONE");
 
         songleMap = new SongleMap(songNum, markerInfos, mMap, this);
         songleMap.Initialise();

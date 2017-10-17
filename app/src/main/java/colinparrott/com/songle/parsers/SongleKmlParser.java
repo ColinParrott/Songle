@@ -85,6 +85,7 @@ public class SongleKmlParser
             // Store lyrics of song in string
             String lyricsStream = new DownloadLyricsTask().execute(songNumString).get();
 
+
             // Loop through each placemark and extract the relevant information
             for (KmlContainer containers : layer.getContainers())
             {
