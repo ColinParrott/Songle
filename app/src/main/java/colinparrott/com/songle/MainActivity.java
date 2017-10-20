@@ -14,14 +14,11 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -75,6 +72,7 @@ public class MainActivity extends Activity
      *
      */
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -151,21 +149,27 @@ public class MainActivity extends Activity
             }
             else
             {
-                showWarningMessage("Error. Cannot play without internet connection!");
+                // Display snackbar saying there's no internet connection, allowing user to retry
+                System.out.println("Display no internet snackbar");
+                Snackbar connBar = Snackbar.make(findViewById(R.id.constraint_layout), R.string.txt_NoInternet, Snackbar.LENGTH_INDEFINITE);
+
+                // Change snackbar background colour
+                ((View) connBar.getView()).setBackgroundColor(getResources().getColor(R.color.colorPrimaryMedium));
+
+                connBar.setAction(R.string.txt_Retry, new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        setupGame();
+                    }
+                });
+
+                connBar.show();
             }
         }
 
 
-    }
-
-    /**
-     * Shows warning toast
-     * @param msg Text to display
-     */
-    private void showWarningMessage(String msg)
-    {
-        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_LONG);
-        toast.show();
     }
 
 
@@ -193,6 +197,9 @@ public class MainActivity extends Activity
             {
                 System.out.println("Display permission snackbar");
                 Snackbar permsBar = Snackbar.make(findViewById(R.id.constraint_layout), R.string.txt_Permissions, Snackbar.LENGTH_INDEFINITE);
+
+                // Change snackbar background colourr
+                ((View) permsBar.getView()).setBackgroundColor(getResources().getColor(R.color.colorPrimaryMedium));
 
                 permsBar.setAction(R.string.txt_PermsEnable, new View.OnClickListener()
                 {
