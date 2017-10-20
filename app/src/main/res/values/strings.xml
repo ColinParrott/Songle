@@ -2,9 +2,10 @@
     <string name="app_name">Songle</string>
     <string name="app_name_caps">SONGLE</string>
     <string name="btntxt_Play">Play</string>
-    <string name="btntxt_Options">Options</string>
+    <string name="btntxt_Completed">Completed</string>
     <string name="title_activity_maps">Map</string>
-    <string name="txt_Permissions"><u>ENABLE LOCATION PERMISSION HERE TO PLAY</u></string>
+    <string name="txt_Permissions">Enable location permissions to play</string>
+    <string name="txt_PermsEnable">Enable</string>
 
     <string name="desc_unclassified">Unclassified</string>
     <string name="desc_boring">Boring</string>

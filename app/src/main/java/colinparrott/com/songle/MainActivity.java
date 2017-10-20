@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -100,24 +101,6 @@ public class MainActivity extends Activity
             }
         });
 
-
-        permissionsLink = (TextView) findViewById(R.id.txt_WarningPerms);
-
-        // On click take user to Songle's app settings page to allow them to enable permissions
-        permissionsLink.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                Log.d(TAG, "Permissions text clicked.");
-
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.fromParts("package", getPackageName(), null));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        });
-
     }
 
     @Override
@@ -195,17 +178,36 @@ public class MainActivity extends Activity
     {
         System.out.println("[onRequestPermissionsResult]:\t" + permissions[0]);
 
-        // Only if location permission was granted
+
         if(permissions[0].equals("android.permission.ACCESS_FINE_LOCATION"))
         {
+            // Setup game if user permits
             System.out.println("GRANT RESULTS: " + grantResults[0]);
             if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
                 setupGame();
             }
+            // Display snackbar with button that takes user to Songle's app settings where they can enable the permission.
+            // This is needed on API 26 where the user can permanently deny the location permission by checking the "don't ask again box"
             else
             {
-                permissionsLink.setVisibility(View.VISIBLE);
+                System.out.println("Display permission snackbar");
+                Snackbar permsBar = Snackbar.make(findViewById(R.id.constraint_layout), R.string.txt_Permissions, Snackbar.LENGTH_INDEFINITE);
+
+                permsBar.setAction(R.string.txt_PermsEnable, new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        // Takes user to Songle's app settings page
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", getPackageName(), null));
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                });
+
+                permsBar.show();
+
             }
 
         }
