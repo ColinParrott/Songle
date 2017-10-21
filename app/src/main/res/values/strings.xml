@@ -23,6 +23,7 @@
     <string name="txt_GuessSubmitBtn">Submit</string>
 
     <string name="txt_Correct">Correct!</string>
+    <string name="txt_Incorrect">Incorrect!</string>
 
     <string name="txt_TitleLabel">Title:</string>
     <string name="txt_ArtistLabel">Artist:</string>

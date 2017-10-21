@@ -9,12 +9,16 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,6 +35,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -227,20 +233,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void onGuessButtonPressed()
     {
         LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
-        View prompt = layoutInflater.inflate(R.layout.dialog_guess, null);
+        final View prompt = layoutInflater.inflate(R.layout.dialog_guess, null);
         AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
         promptBuilder.setView(prompt);
 
         final EditText editText = (EditText) prompt.findViewById(R.id.edit_guess);
 
-        promptBuilder.setCancelable(true)
-                .setPositiveButton("Guess", new DialogInterface.OnClickListener()
+        promptBuilder.setPositiveButton("Guess", null);
+        promptBuilder.setNegativeButton("Cancel", null);
+
+        final AlertDialog alertDialog = promptBuilder.create();
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener()
+        {
+            @Override
+            public void onShow(final DialogInterface dialog)
+            {
+                Button positive = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+                positive.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
-                    public void onClick(DialogInterface dialog, int which)
+                    public void onClick(View v)
                     {
                         boolean correct = songleMap.handleGuess(editText.getText().toString());
-
 
                         if(correct)
                         {
@@ -248,17 +264,60 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
+                            alertDialog.dismiss();
+
                             onCorrectGuess();
                         }
                         else
                         {
-                            // TODO: 21/10/2017
+                            TextView statusText = prompt.findViewById(R.id.textView);
+                            statusText.setText(R.string.txt_Incorrect);
+                            statusText.setTextColor(getResources().getColor(R.color.colorError));
+                            Animation a = AnimationUtils.loadAnimation(MapsActivity.super.getApplicationContext(), R.anim.shake);
+                            statusText.startAnimation(a);
+
+                            vibrateDevice(50L);
                         }
                     }
-                })
-                .setNegativeButton("Cancel", null);
+                });
+            }
+        });
 
-        promptBuilder.create().show();
+        alertDialog.show();
+
+//        promptBuilder.setCancelable(true)
+//                .setPositiveButton("Guess", new DialogInterface.OnClickListener()
+//                {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which)
+//                    {
+//                        boolean correct = songleMap.handleGuess(editText.getText().toString());
+//
+//
+//                        if(correct)
+//                        {
+//                            // Hides keyboard if guess correct before dialog pops up (keyboard stays up behind dialog if this is not done)
+//                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+//
+//                            onCorrectGuess();
+//                        }
+//                        else
+//                        {
+//                            ((TextView) prompt.findViewById(R.id.textView)).setText(R.string.txt_Incorrect);
+//                        }
+//                    }
+//                })
+//                .setNegativeButton("Cancel", null);
+//
+//        promptBuilder.create().show();
+    }
+
+    private void vibrateDevice(long duration)
+    {
+        Vibrator vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+
+        vibrator.vibrate(duration);
     }
 
     // Override back button press to make sure user wants to quit game
