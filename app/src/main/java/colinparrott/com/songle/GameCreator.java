@@ -3,9 +3,13 @@ package colinparrott.com.songle;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Pair;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import colinparrott.com.songle.obj.Song;
 
@@ -62,20 +66,57 @@ public class GameCreator
      */
     private Song chooseSong(List<Song> songs)
     {
-        Song song = null;
-        int[] completedNumbers = userPrefsManager.getCompletedNumbers();
+        songs = new ArrayList<Song>(songs);
+        int[] completedNumbers = userPrefsManager.getCompletedNumbersInt();
+        System.out.println("chooseSong()");
 
 
-        if(completedNumbers != null)
+//        for(Song s : songs)
+//        {
+//            System.out.println(s.getNumber() + "\t" + s.getArtist() + "\t" + s.getTitle());
+//        }
+
+        ArrayList<Song> tempSongs = new ArrayList<>();
+
+        if(completedNumbers != null && completedNumbers.length < songs.size())
         {
-            // remove completed songs from list and select new song from remaining ones
-        }
-        else
-        {
-            return songs.get(new Random().nextInt(songs.size()));
+
+            System.out.println("COMPLETED AMOUNT: " + completedNumbers.length);
+
+
+            for(int i = 0; i < songs.size(); i++)
+            {
+                boolean completed = false;
+
+                for(int j = 0; j < completedNumbers.length; j++)
+                {
+                    if(songs.get(i).getNumber() == completedNumbers[j])
+                    {
+                        System.out.println("REMOVE: " + songs.get(i).getTitle());
+                        completed = true;
+                        break;
+                    }
+                }
+
+                if(!completed)
+                {
+                    tempSongs.add(songs.get(i));
+                    System.out.println("ADD: " + songs.get(i).getNumber() + "\t" + songs.get(i).getArtist() + "\t" + songs.get(i).getTitle());
+                }
+            }
+
+            songs = (ArrayList<Song>) tempSongs.clone();
+
+            System.out.println("LEFT SONGS TO CHOOSE FROM");
+            for(Song s : songs)
+            {
+                System.out.println(s.getNumber() + "\t" + s.getArtist() + "\t" + s.getTitle());
+            }
         }
 
-        return song;
+
+
+        return songs.get(new Random().nextInt(songs.size()));
     }
 
     /**

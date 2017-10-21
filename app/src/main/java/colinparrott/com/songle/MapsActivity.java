@@ -1,11 +1,13 @@
 package colinparrott.com.songle;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -13,9 +15,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -99,6 +101,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private Button guessButton;
 
+
+    /**
+     * TextView that shows remaining words(markers) left to collect
+     */
+    private TextView remainingText;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -121,6 +131,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 onGuessButtonPressed();
             }
         });
+
+
+        remainingText = findViewById(R.id.txt_Remaining);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -155,6 +168,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private void onCorrectGuess()
+    {
+
+        LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
+        View prompt = layoutInflater.inflate(R.layout.dialog_guess_success, null);
+        AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
+        promptBuilder.setView(prompt);
+
+        promptBuilder.setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        loadMenu();
+                    }
+                });
+
+        promptBuilder.create().show();
+
+        ((TextView) prompt.findViewById(R.id.textViewTitle)).setText(song.getTitle());
+        ((TextView) prompt.findViewById(R.id.textViewArtist)).setText(song.getArtist());
+
+        TextView linkText = prompt.findViewById(R.id.textViewURL);
+        linkText.setText(song.getLink());
+
+        linkText.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(song.getLink()));
+                startActivity(browserIntent);
+            }
+        });
+
+    }
+
+    private void loadMenu()
+    {
+        Intent intent = new Intent(this, MainActivity.class);
+        this.startActivity(intent);
+    }
+
     private void onGuessButtonPressed()
     {
         LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
@@ -170,7 +227,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        songleMap.handleGuess(editText.getText().toString());
+                        boolean correct = songleMap.handleGuess(editText.getText().toString());
+
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
+                        if(correct)
+                        {
+                            onCorrectGuess();
+                        }
+                        else
+                        {
+                            // TODO: 21/10/2017
+                        }
                     }
                 })
                 .setNegativeButton("Cancel", null);
@@ -312,6 +381,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         songleMap = new SongleMap(song, markerInfos, mMap, this);
         songleMap.Initialise();
+    }
+
+    public void updateRemainingText(int i)
+    {
+        remainingText.setText(String.valueOf(i) + " words left");
     }
 
 

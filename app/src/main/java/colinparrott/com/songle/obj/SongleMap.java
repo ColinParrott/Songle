@@ -1,6 +1,8 @@
 package colinparrott.com.songle.obj;
 
 import android.app.Activity;
+import android.content.Context;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -11,7 +13,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import colinparrott.com.songle.MainActivity;
+import colinparrott.com.songle.MapsActivity;
 import colinparrott.com.songle.R;
+import colinparrott.com.songle.UserPrefsManager;
 
 
 /**
@@ -33,7 +39,7 @@ public class SongleMap
     /**
      * Map activity that created this instance
      */
-    private Activity mapActivity;
+    private MapsActivity mapActivity;
 
     /**
      * Map object of the map activity to manipulate
@@ -60,7 +66,13 @@ public class SongleMap
      */
     private ArrayList<String> foundWords;
 
-    public SongleMap(Song song, ArrayList<SongleMarkerInfo> wordMarkers, GoogleMap map, Activity mapActivity)
+    /**
+     * Deal with persistent storage
+     */
+    private UserPrefsManager prefsManager;
+
+
+    public SongleMap(Song song, ArrayList<SongleMarkerInfo> wordMarkers, GoogleMap map, MapsActivity mapActivity)
     {
         this.song = song;
         this.markerInfos = wordMarkers;
@@ -76,6 +88,7 @@ public class SongleMap
     {
         markers = new ArrayList<>();
         foundWords = new ArrayList<>();
+        prefsManager = new UserPrefsManager(mapActivity.getSharedPreferences("userDetails", Context.MODE_PRIVATE));
 
         for(SongleMarkerInfo info : markerInfos)
         {
@@ -89,6 +102,8 @@ public class SongleMap
 
             markers.add(m);
         }
+
+        mapActivity.updateRemainingText(markers.size());
 
     }
 
@@ -116,6 +131,8 @@ public class SongleMap
                 iterMarkers.remove();
                 m.remove();
                 foundWords.add(info.getLyric());
+
+                mapActivity.updateRemainingText(markers.size());
             }
         }
     }
@@ -198,10 +215,19 @@ public class SongleMap
         }
     }
 
-    public void handleGuess(String songGuessed)
+    public boolean handleGuess(String songGuessed)
     {
+        boolean correct = guessCorrect(songGuessed);
+
         System.out.println("USER GUESSED: " + songGuessed);
-        System.out.println("GUESS CORRECT: " + guessCorrect(songGuessed));
+        System.out.println("GUESS CORRECT: " + correct);
+
+        if(correct)
+        {
+            prefsManager.addCompletedSong(song.getNumber());
+        }
+
+        return correct;
     }
 
     private boolean guessCorrect(String guess)
@@ -210,6 +236,7 @@ public class SongleMap
         guess = normaliseString(guess);
 
         return guess.equals(actualSong);
+        // return true;
 
     }
 

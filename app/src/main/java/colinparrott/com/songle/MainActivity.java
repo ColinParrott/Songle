@@ -108,6 +108,13 @@ public class MainActivity extends Activity
         super.onResume();
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        Intent intent = new Intent(this, this.getClass());
+        startActivity(intent);
+    }
+
     /**
      * Checks if we have location permission and internet connection before continuing.
      * Once satisfied uses GameCreator to continue.

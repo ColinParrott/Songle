@@ -3,6 +3,9 @@ package colinparrott.com.songle;
 import android.content.SharedPreferences;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -11,7 +14,7 @@ import java.util.Set;
  */
 
 
-class UserPrefsManager
+public class UserPrefsManager
 {
 
     /**
@@ -19,7 +22,9 @@ class UserPrefsManager
      */
     private SharedPreferences sharedPrefs;
 
-    UserPrefsManager(SharedPreferences sharedPrefs)
+    private static final String COMPLETED_SONGS_KEY = "completed_songs";
+
+    public UserPrefsManager(SharedPreferences sharedPrefs)
     {
         this.sharedPrefs = sharedPrefs;
     }
@@ -28,8 +33,41 @@ class UserPrefsManager
      * Adds song to list of completed songs in local storage via SharedPreferences
      * @param number Number of completed song
      */
-    void addCompletedSong(int number)
+    public void addCompletedSong(int number)
     {
+        Set<String> completedSongSet = sharedPrefs.getStringSet(COMPLETED_SONGS_KEY, null);
+
+        if(completedSongSet != null)
+        {
+            completedSongSet.add(String.valueOf(number));
+        }
+        else
+        {
+            completedSongSet = new HashSet<>();
+            completedSongSet.add(String.valueOf(number));
+        }
+
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putStringSet(COMPLETED_SONGS_KEY, completedSongSet);
+        editor.clear();
+        editor.commit();
+
+        System.out.println("Added song " + number + " to completed list");
+        System.out.println("Completed list: ");
+
+        Set<String> test = sharedPrefs.getStringSet(COMPLETED_SONGS_KEY, null);
+
+        if(test != null)
+        for(String s : test)
+        {
+            System.out.println(s);
+        }
+        else
+        {
+            System.out.println("[ERROR] SHARED PREFS 'completed_songs' NULL WHEN IT SHOULD NOT BE");
+        }
+
+
 
     }
 
@@ -37,25 +75,30 @@ class UserPrefsManager
      * Gets list of completed song numbers from storage
      * @return List of song numbers user has completed, null if user has completed none
      */
-    int[] getCompletedNumbers()
+    public int[] getCompletedNumbersInt()
     {
-        Set<String> completedSongSet = sharedPrefs.getStringSet("completed_songs", null);
+        Set<String> completedSongSet = sharedPrefs.getStringSet(COMPLETED_SONGS_KEY, null);
 
         if(completedSongSet != null)
         {
-            int[] completed = new int[completedSongSet.size()];
-            ArrayList<String> completedSongList = new ArrayList<String>(completedSongSet);
+            int[] ints = new int[completedSongSet.size()];
+            String[] songArray = completedSongSet.toArray(new String[completedSongSet.size()]);
 
-            for (int i = 0; i < completed.length; i++)
+            for (int i = 0; i < songArray.length; i++)
             {
-                completed[i] = Integer.parseInt(completedSongList.get(i));
+                ints[i] = Integer.parseInt(songArray[i]);
             }
 
-            return completed;
+            return ints;
         }
 
         // If "completed_songs" key is not in storage, return null as
         // this means user has not completed a song
         return null;
+    }
+
+    public Set<String> getCompletedNumbersString()
+    {
+        return sharedPrefs.getStringSet(COMPLETED_SONGS_KEY, null);
     }
 }

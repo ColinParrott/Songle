@@ -8,6 +8,7 @@
     <string name="txt_PermsEnable">Enable</string>
     <string name="txt_NoInternet">No internet connection</string>
     <string name="txt_Retry">Retry</string>
+    <string name="txt_Ok">Ok</string>
 
     <string name="desc_unclassified">Unclassified</string>
     <string name="desc_boring">Boring</string>
@@ -19,4 +20,15 @@
     <string name="txt_GuessPrompt">Guess Song</string>
     <string name="txt_GuessHint">Song name</string>
     <string name="txt_GuessSubmitBtn">Submit</string>
+
+    <string name="txt_Correct">Correct!</string>
+
+    <string name="txt_TitleLabel">Title:</string>
+    <string name="txt_ArtistLabel">Artist:</string>
+    <string name="txt_URLLabel">Link:</string>
+
+
+    <string name="txt_TitlePlaceholder">Bohemian Rhapsody</string>
+    <string name="txt_ArtistPlaceholder">Queen</string>
+    <string name="txt_URLPlaceholder"><a href="https://youtu.be/fJ9rUzIMcZQ">https://youtu.be/fJ9rUzIMcZQ</a></string>
 </resources>
