@@ -31,8 +31,8 @@
         android:id="@+id/txt_Remaining"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="999 words left"
+        android:layout_marginTop="8dp"
+        android:text="@string/txt_RemainingPlaceholder"
         android:shadowColor="#000000"
         android:shadowDx="0"
         android:shadowDy="0"
@@ -42,8 +42,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:visibility="visible"
-        android:layout_marginStart="16dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignEnd="@+id/btn_guess"/>
 
 </RelativeLayout>

@@ -2,10 +2,7 @@ package colinparrott.com.songle;
 
 import android.content.SharedPreferences;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -37,6 +34,7 @@ public class UserPrefsManager
     {
         Set<String> completedSongSet = sharedPrefs.getStringSet(COMPLETED_SONGS_KEY, null);
 
+        // Adds song new to set (creates set if there wasn't one before)
         if(completedSongSet != null)
         {
             completedSongSet.add(String.valueOf(number));
@@ -47,11 +45,14 @@ public class UserPrefsManager
             completedSongSet.add(String.valueOf(number));
         }
 
+        // Store updated set into storage
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putStringSet(COMPLETED_SONGS_KEY, completedSongSet);
         editor.clear();
         editor.commit();
 
+
+        // Debugging ************
         System.out.println("Added song " + number + " to completed list");
         System.out.println("Completed list: ");
 
@@ -66,8 +67,7 @@ public class UserPrefsManager
         {
             System.out.println("[ERROR] SHARED PREFS 'completed_songs' NULL WHEN IT SHOULD NOT BE");
         }
-
-
+        // **********************
 
     }
 
@@ -97,6 +97,10 @@ public class UserPrefsManager
         return null;
     }
 
+    /**
+     * Gets the completed numbers in their stored format a Set of Strings
+     * @return Set of completed numbers as strings
+     */
     public Set<String> getCompletedNumbersString()
     {
         return sharedPrefs.getStringSet(COMPLETED_SONGS_KEY, null);

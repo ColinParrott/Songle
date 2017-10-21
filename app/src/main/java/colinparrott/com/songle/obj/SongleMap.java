@@ -215,6 +215,11 @@ public class SongleMap
         }
     }
 
+    /**
+     * Handles user's guess and updates stored completed list if correct AND returns whether guess was deemed correct or not
+     * @param songGuessed String user guessed
+     * @return True if guess correct, false otherwise
+     */
     public boolean handleGuess(String songGuessed)
     {
         boolean correct = guessCorrect(songGuessed);
@@ -230,6 +235,11 @@ public class SongleMap
         return correct;
     }
 
+    /**
+     * Checks if a string is a close enough match to the actual song title
+     * @param guess String to check
+     * @return True if deemed a good match, false otherwise
+     */
     private boolean guessCorrect(String guess)
     {
         String actualSong = normaliseString(song.getTitle());
@@ -240,9 +250,14 @@ public class SongleMap
 
     }
 
+    /**
+     * Removes leading and trailing whitespace, punctuation and spaces from Strings
+     * @param s String to format
+     * @return Normalised string for lenient comparisons
+     */
     private String normaliseString(String s)
     {
-        return s.replaceAll("\\p{P}", "").toLowerCase().trim();
+        return s.replaceAll("\\p{P}", "").replace(" ", "").toLowerCase().trim();
     }
 
 }

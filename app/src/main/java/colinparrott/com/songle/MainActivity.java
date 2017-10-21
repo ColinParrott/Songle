@@ -108,6 +108,7 @@ public class MainActivity extends Activity
         super.onResume();
     }
 
+    // Stop user going back into a map after they've completed it
     @Override
     public void onBackPressed()
     {

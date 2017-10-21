@@ -16,6 +16,7 @@
     <string name="desc_interesting">Interesting</string>
     <string name="desc_veryinteresting">Very interesting</string>
 
+    <string name="txt_RemainingPlaceholder">999 words left</string>
     <string name="txt_guess">Guess</string>
     <string name="txt_GuessPrompt">Guess Song</string>
     <string name="txt_GuessHint">Song name</string>

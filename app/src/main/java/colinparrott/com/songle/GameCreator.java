@@ -3,6 +3,7 @@ package colinparrott.com.songle;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -41,6 +42,11 @@ public class GameCreator
      */
     public static final String SONG_MSG = "com.songle.gamecreator.SONG";
 
+    /**
+     * Debugging tag
+     */
+    private static final String TAG = "GameCreator";
+
     public GameCreator(Context context, SharedPreferences userPrefs)
     {
         this.userPrefs = userPrefs;
@@ -68,22 +74,18 @@ public class GameCreator
     {
         songs = new ArrayList<Song>(songs);
         int[] completedNumbers = userPrefsManager.getCompletedNumbersInt();
-        System.out.println("chooseSong()");
-
-
-//        for(Song s : songs)
-//        {
-//            System.out.println(s.getNumber() + "\t" + s.getArtist() + "\t" + s.getTitle());
-//        }
+        Log.d(TAG, "chooseSong()");
 
         ArrayList<Song> tempSongs = new ArrayList<>();
 
+        // If user has completed at least one song and user hasn't completed every song then
+        // remove completed songs from list
         if(completedNumbers != null && completedNumbers.length < songs.size())
         {
 
             System.out.println("COMPLETED AMOUNT: " + completedNumbers.length);
 
-
+            // Adds songs not in completed list to a new temporary list
             for(int i = 0; i < songs.size(); i++)
             {
                 boolean completed = false;
@@ -98,6 +100,7 @@ public class GameCreator
                     }
                 }
 
+                // Add uncompleted song to new list
                 if(!completed)
                 {
                     tempSongs.add(songs.get(i));
@@ -105,8 +108,10 @@ public class GameCreator
                 }
             }
 
+            // Copy temp list into list we'll return
             songs = (ArrayList<Song>) tempSongs.clone();
 
+            // Debugging
             System.out.println("LEFT SONGS TO CHOOSE FROM");
             for(Song s : songs)
             {
@@ -114,8 +119,7 @@ public class GameCreator
             }
         }
 
-
-
+        // Returns a random song from uncompleted song list (or from all songs if user has completed EVERY song)
         return songs.get(new Random().nextInt(songs.size()));
     }
 

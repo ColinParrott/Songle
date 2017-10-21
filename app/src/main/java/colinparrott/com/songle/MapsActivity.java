@@ -168,6 +168,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Displays a dialog telling user their guess was correct along with
+     * the song's title, artist and a clickable YouTube link.
+     */
     private void onCorrectGuess()
     {
 
@@ -194,6 +198,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView linkText = prompt.findViewById(R.id.textViewURL);
         linkText.setText(song.getLink());
 
+        // Makes YouTube link clickable and opens it in YouTube app / browser depending on user's preferences
         linkText.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -206,12 +211,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * Loads main menu activity
+     */
     private void loadMenu()
     {
         Intent intent = new Intent(this, MainActivity.class);
         this.startActivity(intent);
     }
 
+    /**
+     * Displays dialog with an input field where user can enter their guess
+     * for the current song.
+     */
     private void onGuessButtonPressed()
     {
         LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
@@ -229,11 +241,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     {
                         boolean correct = songleMap.handleGuess(editText.getText().toString());
 
-                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
                         if(correct)
                         {
+                            // Hides keyboard if guess correct before dialog pops up (keyboard stays up behind dialog if this is not done)
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
                             onCorrectGuess();
                         }
                         else
@@ -383,6 +397,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         songleMap.Initialise();
     }
 
+    /**
+     * Updates the text showing how many words(markers) are left to find
+     * @param i Number of markers left
+     */
     public void updateRemainingText(int i)
     {
         remainingText.setText(String.valueOf(i) + " words left");
