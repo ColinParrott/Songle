@@ -1,7 +1,10 @@
 package colinparrott.com.songle.obj;
 
-import android.app.Activity;
 import android.content.Context;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,10 +17,9 @@ import com.google.maps.android.SphericalUtil;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import colinparrott.com.songle.MainActivity;
 import colinparrott.com.songle.MapsActivity;
 import colinparrott.com.songle.R;
-import colinparrott.com.songle.UserPrefsManager;
+import colinparrott.com.songle.storage.UserPrefsManager;
 
 
 /**
@@ -143,8 +145,17 @@ public class SongleMap
      */
     private void toast(String s)
     {
-        Toast t = Toast.makeText(mapActivity.getApplicationContext(), s, Toast.LENGTH_SHORT);
-        t.show();
+        LayoutInflater inflater = mapActivity.getLayoutInflater();
+        View layout = inflater.inflate(R.layout.word_toast, (ViewGroup) mapActivity.findViewById(R.id.custom_toast_container));
+
+        TextView text = (TextView) layout.findViewById(R.id.text);
+        text.setText(s);
+
+        Toast toast = new Toast(mapActivity.getApplicationContext());
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, -750);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
     }
 
     /**

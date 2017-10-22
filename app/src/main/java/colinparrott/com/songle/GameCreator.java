@@ -4,15 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.util.Pair;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
+import colinparrott.com.songle.obj.Difficulty;
 import colinparrott.com.songle.obj.Song;
+import colinparrott.com.songle.storage.UserPrefsManager;
 
 /**
  * Class called by MainActivity deals with creating a new game
@@ -43,6 +42,11 @@ public class GameCreator
     public static final String SONG_MSG = "com.songle.gamecreator.SONG";
 
     /**
+     *
+     */
+    public static final String DIFFICULTY_MSG = "com.songle.gamecreator.DIFFICULTY";
+
+    /**
      * Debugging tag
      */
     private static final String TAG = "GameCreator";
@@ -58,11 +62,11 @@ public class GameCreator
      * Chooses a song, and calls a method to load the MapActivity
      * @param songList List of songs retrieved online
      */
-    public void createGame(List<Song> songList)
+    public void createGame(List<Song> songList, Difficulty difficulty)
     {
         Song chosenSong = chooseSong(songList);
         System.out.println("Chosen: " + chosenSong.getNumber() + " " + chosenSong.getTitle());
-        loadMapActivity(chosenSong);
+        loadMapActivity(chosenSong, difficulty);
     }
 
     /**
@@ -127,10 +131,11 @@ public class GameCreator
      * Load MapActivity and pass chosen song
      * @param song Chosen song
      */
-    private void loadMapActivity(Song song)
+    private void loadMapActivity(Song song, Difficulty difficulty)
     {
         Intent intent = new Intent(mainContext, MapsActivity.class);
         intent.putExtra(SONG_MSG, song);
+        intent.putExtra(DIFFICULTY_MSG, difficulty);
         mainContext.startActivity(intent);
     }
 

@@ -8,6 +8,8 @@
                                              android:background="@color/colorPrimaryDark"
                                              tools:context="colinparrott.com.songle.MainActivity">
 
+
+
     <Button
         android:id="@+id/btn_Play"
         android:layout_width="250dp"
@@ -16,7 +18,6 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="279dp"
         android:background="@color/colorPrimary"
         android:elevation="12dp"
         android:text="@string/btntxt_Play"
@@ -25,7 +26,8 @@
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_marginTop="46dp"
+        app:layout_constraintTop_toBottomOf="@+id/diffSeek"/>
 
     <Button
         android:id="@+id/btn_Completed"
@@ -35,7 +37,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="21dp"
+        android:layout_marginTop="15dp"
         android:background="@color/colorPrimary"
         android:elevation="12dp"
         android:text="@string/btntxt_Completed"
@@ -81,12 +83,81 @@
         android:foregroundTint="@color/colorAccent"
         android:indeterminateTint="@color/colorAccent"
         android:progressTint="@color/colorAccent"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/btn_Play"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.504"
+        app:layout_constraintVertical_bias="0.025"
         tools:foregroundTint="@color/colorAccent"/>
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="17dp"
+        android:text="@string/txt_ChooseDifficulty"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progBar"
+        app:layout_constraintHorizontal_bias="0.501"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"/>
+
+    <TextView
+        android:id="@+id/txt_Difficulty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/txt_VeryEasy"
+        android:textColor="@color/colorVeryEasy"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"/>
+
+    <TextView
+        android:id="@+id/txt_DifficultyDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="serif"
+        android:text="@string/txt_VeryEasyDesc"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/txt_Difficulty"
+        android:layout_marginRight="-16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <SeekBar
+        android:id="@+id/diffSeek"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:max="4"
+        android:progress="0"
+        android:progressTint="@color/colorVeryEasy"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginTop="17dp"
+        app:layout_constraintTop_toBottomOf="@+id/txt_DifficultyDesc"/>
 
 </android.support.constraint.ConstraintLayout>

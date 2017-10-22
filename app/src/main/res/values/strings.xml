@@ -1,14 +1,18 @@
 <resources>
-    <string name="app_name">Songle</string>
-    <string name="app_name_caps">SONGLE</string>
+    <string name="app_name" translatable="false">Songle</string>
+    <string name="app_name_caps" translatable="false">SONGLE</string>
     <string name="btntxt_Play">Play</string>
     <string name="btntxt_Completed">Completed</string>
     <string name="title_activity_maps">Map</string>
     <string name="txt_Permissions">Enable location permissions to play</string>
     <string name="txt_PermsEnable">Enable</string>
+
     <string name="txt_NoInternet">No internet connection</string>
     <string name="txt_Retry">Retry</string>
+
+
     <string name="txt_Ok">Ok</string>
+
 
     <string name="desc_unclassified">Unclassified</string>
     <string name="desc_boring">Boring</string>
@@ -22,6 +26,21 @@
     <string name="txt_GuessHint">Song name</string>
     <string name="txt_GuessSubmitBtn">Submit</string>
 
+    <string name="txt_ChooseDifficulty">Difficulty</string>
+    <string name="txt_VeryEasy">VERY EASY</string>
+    <string name="txt_Easy">EASY</string>
+    <string name="txt_Moderate">MODERATE</string>
+    <string name="txt_Hard">HARD</string>
+    <string name="txt_VeryHard">VERY HARD</string>
+
+    <string name="txt_VeryEasyDesc">All words. Words are classified into 3 categories.</string>
+    <string name="txt_EasyDesc">All words. Words are classified into 3 categories.</string>
+    <string name="txt_ModerateDesc">75% of words. Words are classified into 3 categories.</string>
+    <string name="txt_HardDesc">50% of words. Words are classified into 2 categories.</string>
+    <string name="txt_VeryHardDesc">25% of words. No usefulness of words shown.</string>
+
+
+
     <string name="txt_Correct">Correct!</string>
     <string name="txt_Incorrect">Incorrect!</string>
 
@@ -30,7 +49,7 @@
     <string name="txt_URLLabel">Link:</string>
 
 
-    <string name="txt_TitlePlaceholder">Bohemian Rhapsody</string>
-    <string name="txt_ArtistPlaceholder">Queen</string>
-    <string name="txt_URLPlaceholder"><a href="https://youtu.be/fJ9rUzIMcZQ">https://youtu.be/fJ9rUzIMcZQ</a></string>
+    <string name="txt_TitlePlaceholder" translatable="false">Bohemian Rhapsody</string>
+    <string name="txt_ArtistPlaceholder" translatable="false">Queen</string>
+    <string name="txt_URLPlaceholder" translatable="false"><a href="https://youtu.be/fJ9rUzIMcZQ">https://youtu.be/fJ9rUzIMcZQ</a></string>
 </resources>

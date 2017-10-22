@@ -40,6 +40,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
+import colinparrott.com.songle.obj.Difficulty;
 import colinparrott.com.songle.obj.Song;
 import colinparrott.com.songle.parsers.SongleKmlParser;
 import colinparrott.com.songle.obj.SongleMap;
@@ -222,8 +223,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void loadMenu()
     {
-        Intent intent = new Intent(this, MainActivity.class);
-        this.startActivity(intent);
+        Intent goToMenu = new Intent(getApplicationContext(), MainActivity.class);
+        goToMenu.putExtra("calling_activity", "MapsActivity");
+        startActivity(goToMenu);
     }
 
     /**
@@ -265,17 +267,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
                             alertDialog.dismiss();
-
                             onCorrectGuess();
                         }
                         else
                         {
+                            // Change dialog title to "incorrect"
                             TextView statusText = prompt.findViewById(R.id.textView);
                             statusText.setText(R.string.txt_Incorrect);
                             statusText.setTextColor(getResources().getColor(R.color.colorError));
+
+                            // Shake "incorrect" text
                             Animation a = AnimationUtils.loadAnimation(MapsActivity.super.getApplicationContext(), R.anim.shake);
                             statusText.startAnimation(a);
 
+                            // Vibrational feedback
                             vibrateDevice(50L);
                         }
                     }
@@ -284,35 +289,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         alertDialog.show();
-
-//        promptBuilder.setCancelable(true)
-//                .setPositiveButton("Guess", new DialogInterface.OnClickListener()
-//                {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which)
-//                    {
-//                        boolean correct = songleMap.handleGuess(editText.getText().toString());
-//
-//
-//                        if(correct)
-//                        {
-//                            // Hides keyboard if guess correct before dialog pops up (keyboard stays up behind dialog if this is not done)
-//                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-//
-//                            onCorrectGuess();
-//                        }
-//                        else
-//                        {
-//                            ((TextView) prompt.findViewById(R.id.textView)).setText(R.string.txt_Incorrect);
-//                        }
-//                    }
-//                })
-//                .setNegativeButton("Cancel", null);
-//
-//        promptBuilder.create().show();
     }
 
+    /**
+     * Vibrates device if it has one
+     * @param duration Duration of vibration
+     */
     private void vibrateDevice(long duration)
     {
         Vibrator vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
@@ -336,7 +318,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        MapsActivity.super.onBackPressed();
+                       MapsActivity.super.onBackPressed();
                     }
                 });
 
@@ -384,7 +366,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLat, defaultLong), 18f));
-        loadGameMapData();
+
+        Intent i = getIntent();
+        Difficulty d = (Difficulty) i.getSerializableExtra(GameCreator.DIFFICULTY_MSG);
+        loadGameMapData(d);
 
     }
 
@@ -446,11 +431,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Creates a SongleMap object for game logic
      */
-    private void loadGameMapData()
+    private void loadGameMapData(Difficulty diff)
     {
 
         SongleKmlParser parser = new SongleKmlParser();
-        ArrayList<SongleMarkerInfo> markerInfos = parser.parse(mMap, this, song.getNumber(), 5);
+        ArrayList<SongleMarkerInfo> markerInfos = parser.parse(mMap, this, song.getNumber(), diff.ordinal() + 1);
 
         songleMap = new SongleMap(song, markerInfos, mMap, this);
         songleMap.Initialise();

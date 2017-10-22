@@ -3,9 +3,11 @@ package colinparrott.com.songle;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -14,16 +16,28 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
+
+
+import org.apache.commons.io.IOUtils;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import colinparrott.com.songle.downloaders.DownloadXmlTask;
+import colinparrott.com.songle.obj.Difficulty;
 import colinparrott.com.songle.obj.Song;
+import colinparrott.com.songle.parsers.SongsXmlParser;
 
 public class MainActivity extends Activity
 {
@@ -35,7 +49,7 @@ public class MainActivity extends Activity
 
     /**
      * ProgressBar object
-      */
+     */
     private ProgressBar progressBar;
 
     /**
@@ -71,6 +85,8 @@ public class MainActivity extends Activity
     /**
      *
      */
+    private SeekBar diffBar;
+
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
 
@@ -95,10 +111,75 @@ public class MainActivity extends Activity
             {
                 triedToPlay = true;
                 Log.d(TAG, "Play button clicked");
+
                 setupGame();
             }
         });
 
+        diffBar = (SeekBar) findViewById(R.id.diffSeek);
+        diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorVeryEasy), PorterDuff.Mode.MULTIPLY);
+
+        diffBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+            {
+                updateDifficultyText(getDifficulty(seekBar.getProgress()));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar)
+            {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar)
+            {
+
+            }
+        });
+
+    }
+
+    private void updateDifficultyText(Difficulty difficulty)
+    {
+        TextView txtDiffculty = findViewById(R.id.txt_Difficulty);
+        TextView txtDesc = findViewById(R.id.txt_DifficultyDesc);
+
+        switch (difficulty)
+        {
+            case VERY_EASY:
+                txtDiffculty.setText(R.string.txt_VeryEasy);
+                txtDiffculty.setTextColor(getResources().getColor(R.color.colorVeryEasy));
+                diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorVeryEasy), PorterDuff.Mode.MULTIPLY);
+                txtDesc.setText(R.string.txt_VeryEasyDesc);
+                break;
+            case EASY:
+                txtDiffculty.setText(R.string.txt_Easy);
+                txtDiffculty.setTextColor(getResources().getColor(R.color.colorEasy));
+                diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorEasy), PorterDuff.Mode.MULTIPLY);
+                txtDesc.setText(R.string.txt_EasyDesc);
+                break;
+            case MODERATE:
+                txtDiffculty.setText(R.string.txt_Moderate);
+                txtDiffculty.setTextColor(getResources().getColor(R.color.colorModerate));
+                diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorModerate), PorterDuff.Mode.MULTIPLY);
+                txtDesc.setText(R.string.txt_ModerateDesc);
+                break;
+            case HARD:
+                txtDiffculty.setText(R.string.txt_Hard);
+                txtDiffculty.setTextColor(getResources().getColor(R.color.colorHard));
+                diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorHard), PorterDuff.Mode.MULTIPLY);
+                txtDesc.setText(R.string.txt_HardDesc);
+                break;
+            case VERY_HARD:
+                txtDiffculty.setText(R.string.txt_VeryHard);
+                txtDiffculty.setTextColor(getResources().getColor(R.color.colorVeryHard));
+                diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorVeryHard), PorterDuff.Mode.MULTIPLY);
+                txtDesc.setText(R.string.txt_VeryHardDesc);
+                break;
+        }
     }
 
     @Override
@@ -112,57 +193,61 @@ public class MainActivity extends Activity
     @Override
     public void onBackPressed()
     {
-        Intent intent = new Intent(this, this.getClass());
-        startActivity(intent);
+        String caller = getIntent().getStringExtra("calling_activity");
+        System.out.println("CALLER: " + caller);
+
+        if (caller != null) {
+            if (!caller.equals("MapsActivity")) {
+                super.onBackPressed();
+            }
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
     /**
      * Checks if we have location permission and internet connection before continuing.
      * Once satisfied uses GameCreator to continue.
+     *
      */
     private void setupGame()
     {
         // Ask for location permissions if not already granted
-        if (!haveLocationPermission())
-        {
+        if (!haveLocationPermission()) {
             Log.w(TAG, "Location permission NOT granted. Asking for permission and displaying settings text link.");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
         else
-        {
-            // Check internet
-            if(haveInternet())
             {
-                List<Song> songs = null;
+
+            // Check internet
+            if (haveInternet())
+            {
 
                 progressBar.setVisibility(View.VISIBLE);
-
                 try
                 {
-                    songs = new DownloadXmlTask().execute(URL_SONGS_XML).get();
+                    String songsXmlData = new DownloadXmlTask().execute(URL_SONGS_XML).get();
+                    initialiseGameCreator(songsXmlData, getDifficulty(diffBar.getProgress()));
                 }
                 catch (InterruptedException | ExecutionException e)
                 {
-                    e.printStackTrace();
+                    System.out.println("[MainActivity.setupGame()] Failed to download songs.xml data");
                 }
 
-                if(songs != null)
-                {
-                    Log.d(TAG, "Successfully retrieved and parsed songs.xml");
-
-                    gameCreator = new GameCreator(this, getSharedPreferences(PREFS_NAME, MODE_PRIVATE));
-                    gameCreator.createGame(songs);
-                }
 
             }
             else
-            {
+                {
+
                 // Display snackbar saying there's no internet connection, allowing user to retry
                 System.out.println("Display no internet snackbar");
                 Snackbar connBar = Snackbar.make(findViewById(R.id.constraint_layout), R.string.txt_NoInternet, Snackbar.LENGTH_INDEFINITE);
 
                 // Change snackbar background colour
                 ((View) connBar.getView()).setBackgroundColor(getResources().getColor(R.color.colorPrimaryMedium));
+
 
                 connBar.setAction(R.string.txt_Retry, new View.OnClickListener()
                 {
@@ -175,8 +260,54 @@ public class MainActivity extends Activity
 
                 connBar.show();
             }
+
         }
 
+    }
+
+    private Difficulty getDifficulty(int progress)
+    {
+        switch (progress)
+        {
+            case 0:
+                return Difficulty.VERY_EASY;
+            case 1:
+                return Difficulty.EASY;
+            case 2:
+                return Difficulty.MODERATE;
+            case 3:
+                return Difficulty.HARD;
+            case 4:
+                return Difficulty.VERY_HARD;
+            default:
+                return Difficulty.VERY_EASY;
+        }
+    }
+
+    private void initialiseGameCreator(String data, Difficulty chosenDifficulty)
+    {
+        SongsXmlParser xmlParser = new SongsXmlParser();
+        List<Song> songs = null;
+        InputStream stream = IOUtils.toInputStream(data);
+
+
+        try
+        {
+            songs = xmlParser.parse(stream);
+
+            if (songs != null)
+            {
+                Log.d(TAG, "Successfully retrieved and parsed songs.xml");
+
+                gameCreator = new GameCreator(this, getSharedPreferences(PREFS_NAME, MODE_PRIVATE));
+                gameCreator.createGame(songs, chosenDifficulty);
+            }
+
+        }
+        catch (XmlPullParserException | IOException e)
+        {
+            e.printStackTrace();
+        }
 
     }
 
@@ -191,18 +322,15 @@ public class MainActivity extends Activity
         System.out.println("[onRequestPermissionsResult]:\t" + permissions[0]);
 
 
-        if(permissions[0].equals("android.permission.ACCESS_FINE_LOCATION"))
-        {
+        if (permissions[0].equals("android.permission.ACCESS_FINE_LOCATION")) {
             // Setup game if user permits
             System.out.println("GRANT RESULTS: " + grantResults[0]);
-            if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
+            if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setupGame();
             }
             // Display snackbar with button that takes user to Songle's app settings where they can enable the permission.
             // This is needed on API 26 where the user can permanently deny the location permission by checking the "don't ask again box"
-            else
-            {
+            else {
                 System.out.println("Display permission snackbar");
                 Snackbar permsBar = Snackbar.make(findViewById(R.id.constraint_layout), R.string.txt_Permissions, Snackbar.LENGTH_INDEFINITE);
 
@@ -232,6 +360,7 @@ public class MainActivity extends Activity
 
     /**
      * Checks if we location permission
+     *
      * @return True if permission granted; false otherwise
      */
     private boolean haveLocationPermission()
@@ -241,7 +370,8 @@ public class MainActivity extends Activity
 
 
     /**
-     * Checks if we have internet access (adapated from official Android docs)
+     * Checks if we have internet access (adapted from official Android docs)
+     *
      * @return True if connection available; false otherwise
      */
     private boolean haveInternet()

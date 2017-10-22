@@ -1,4 +1,4 @@
-package colinparrott.com.songle;
+package colinparrott.com.songle.storage;
 
 import android.content.SharedPreferences;
 

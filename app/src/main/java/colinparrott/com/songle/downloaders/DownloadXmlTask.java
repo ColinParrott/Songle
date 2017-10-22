@@ -1,32 +1,34 @@
 package colinparrott.com.songle.downloaders;
 
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.apache.commons.io.IOUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-
-import colinparrott.com.songle.parsers.SongsXmlParser;
-import colinparrott.com.songle.obj.Song;
 
 /**
  * AsyncTask to download Songs.xml, calls class to parse it and returns a list of Song objects
  */
 
-public class DownloadXmlTask extends AsyncTask<String, Void, List<Song>>
+public class DownloadXmlTask extends AsyncTask<String, Void, String>
 {
 
     private static final String TAG = "DownloadXmlTask";
+    private String fileName;
+    private Context context;
+
 
     @Override
-    protected List<Song> doInBackground(String... urls)
+    protected String doInBackground(String... urls)
     {
+
         try
         {
             return loadXmlFromNetwork(urls[0]);
@@ -44,24 +46,22 @@ public class DownloadXmlTask extends AsyncTask<String, Void, List<Song>>
     }
 
     @Override
-    protected void onPostExecute(List<Song> result)
+    protected void onPostExecute(String result)
     {
         //System.out.println("Download complete\n" + result);
     }
 
-    private List<Song> loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException
+    private String loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException
     {
-        List<Song> songList = null;
 
+        String result = null;
 
         try(InputStream stream = downloadUrl(urlString))
         {
-            // Parse songs from InputStream
-            SongsXmlParser xmlParser = new SongsXmlParser();
-            songList = xmlParser.parse(stream);
+            result = IOUtils.toString(stream);
         }
 
-        return songList;
+        return result;
     }
 
     private InputStream downloadUrl(String urlString) throws IOException
