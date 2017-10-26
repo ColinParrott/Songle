@@ -2,6 +2,7 @@ package colinparrott.com.songle;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.apache.commons.io.IOUtils;
@@ -9,6 +10,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import colinparrott.com.songle.downloaders.DownloadXmlTask;
 import colinparrott.com.songle.obj.Song;
@@ -21,7 +23,7 @@ import colinparrott.com.songle.parsers.SongsXmlParser;
 public class CompletedActivity extends Activity
 {
     private ListView listView;
-    private ArrayList<Song> songs;
+    private List<Song> songs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -35,10 +37,11 @@ public class CompletedActivity extends Activity
             @Override
             public void onFinished(String result)
             {
+                System.out.println("[onFinished]");
                 SongsXmlParser songsXmlParser = new SongsXmlParser();
                 try
                 {
-                    songs = (ArrayList<Song>) songsXmlParser.parse(IOUtils.toInputStream(result));
+                    songs = songsXmlParser.parse(IOUtils.toInputStream(result));
                 }
                 catch (XmlPullParserException | IOException e)
                 {
@@ -47,14 +50,16 @@ public class CompletedActivity extends Activity
 
                 if (songs != null)
                 {
-                    for(Song s : songs)
-                    {
-                        // TODO
-                    }
+                    SongArrayAdapter listAdapter = new SongArrayAdapter(CompletedActivity.super.getApplicationContext(), R.layout.list_row, songs);
+
+                    listView.setAdapter(listAdapter);
                 }
 
             }
         });
+
+        downloadXmlTask.execute(MainActivity.URL_SONGS_XML);
+
     }
 
     @Override

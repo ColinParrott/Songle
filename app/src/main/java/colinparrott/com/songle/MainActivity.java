@@ -78,7 +78,7 @@ public class MainActivity extends Activity
     /**
      * Url to songs xml file
      */
-    private static final String URL_SONGS_XML = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.xml";
+    public static final String URL_SONGS_XML = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.xml";
 
     /**
      * Key used to store data in persistent storage
