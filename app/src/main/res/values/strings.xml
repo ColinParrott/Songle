@@ -52,4 +52,6 @@
     <string name="txt_TitlePlaceholder" translatable="false">Bohemian Rhapsody</string>
     <string name="txt_ArtistPlaceholder" translatable="false">Queen</string>
     <string name="txt_URLPlaceholder" translatable="false"><a href="https://youtu.be/fJ9rUzIMcZQ">https://youtu.be/fJ9rUzIMcZQ</a></string>
+
+    <string name="txt_SongList">SONG LIST</string>
 </resources>

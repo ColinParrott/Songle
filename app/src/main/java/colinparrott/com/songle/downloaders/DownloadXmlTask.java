@@ -24,6 +24,18 @@ public class DownloadXmlTask extends AsyncTask<String, Void, String>
     private String fileName;
     private Context context;
 
+    public interface TaskListener
+    {
+        public void onFinished(String result);
+    }
+
+    private final TaskListener taskListener;
+
+    public DownloadXmlTask(TaskListener listener)
+    {
+        this.taskListener = listener;
+    }
+
 
     @Override
     protected String doInBackground(String... urls)
@@ -48,7 +60,12 @@ public class DownloadXmlTask extends AsyncTask<String, Void, String>
     @Override
     protected void onPostExecute(String result)
     {
-        //System.out.println("Download complete\n" + result);
+        super.onPostExecute(result);
+
+        if(this.taskListener != null)
+        {
+            this.taskListener.onFinished(result);
+        }
     }
 
     private String loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException

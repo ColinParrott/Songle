@@ -51,6 +51,11 @@ public class MainActivity extends Activity
     private Button playButton;
 
     /**
+     * Completed button object
+     */
+    private Button completedButton;
+
+    /**
      * ProgressBar object
      */
     private ProgressBar progressBar;
@@ -118,6 +123,19 @@ public class MainActivity extends Activity
                 setupGame();
             }
         });
+
+        completedButton = (Button) findViewById(R.id.btn_Completed);
+
+        completedButton.setOnClickListener(new View.OnClickListener()
+                                           {
+                                               @Override
+                                               public void onClick(View v)
+                                               {
+                                                   Log.d(TAG, "Completed button clicked");
+                                                   Intent intent = new Intent(MainActivity.super.getApplicationContext(), CompletedActivity.class);
+                                                   startActivity(intent);
+                                               }
+                                           });
 
         diffBar = (SeekBar) findViewById(R.id.diffSeek);
         diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorVeryEasy), PorterDuff.Mode.MULTIPLY);
@@ -239,7 +257,7 @@ public class MainActivity extends Activity
                 progressBar.setVisibility(View.VISIBLE);
                 try
                 {
-                    String songsXmlData = new DownloadXmlTask().execute(URL_SONGS_XML).get();
+                    String songsXmlData = new DownloadXmlTask(null).execute(URL_SONGS_XML).get();
                     initialiseGameCreator(songsXmlData, getDifficulty(diffBar.getProgress()));
                 }
                 catch (InterruptedException | ExecutionException e)
