@@ -26,14 +26,14 @@
     <string name="txt_GuessHint">Song name</string>
     <string name="txt_GuessSubmitBtn">Submit</string>
 
-    <string name="txt_ChooseDifficulty">Difficulty</string>
+    <string name="txt_ChooseDifficulty">Select Difficulty</string>
     <string name="txt_VeryEasy">VERY EASY</string>
     <string name="txt_Easy">EASY</string>
     <string name="txt_Moderate">MODERATE</string>
     <string name="txt_Hard">HARD</string>
     <string name="txt_VeryHard">VERY HARD</string>
 
-    <string name="txt_VeryEasyDesc">All words. Words are classified into 3 categories.</string>
+    <string name="txt_VeryEasyDesc">All words. Words are classified into 4 categories.</string>
     <string name="txt_EasyDesc">All words. Words are classified into 3 categories.</string>
     <string name="txt_ModerateDesc">75% of words. Words are classified into 3 categories.</string>
     <string name="txt_HardDesc">50% of words. Words are classified into 2 categories.</string>

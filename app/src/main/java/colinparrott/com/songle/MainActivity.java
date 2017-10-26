@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.RectShape;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -119,6 +122,12 @@ public class MainActivity extends Activity
         diffBar = (SeekBar) findViewById(R.id.diffSeek);
         diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorVeryEasy), PorterDuff.Mode.MULTIPLY);
 
+        ShapeDrawable thumb = new ShapeDrawable(new OvalShape());
+        thumb.getPaint().setColor(getResources().getColor(R.color.colorAccent));
+        thumb.setIntrinsicHeight(60);
+        thumb.setIntrinsicWidth(60);
+        diffBar.setThumb(thumb);
+
         diffBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
         {
             @Override
@@ -132,6 +141,7 @@ public class MainActivity extends Activity
             {
 
             }
+
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar)
@@ -225,6 +235,7 @@ public class MainActivity extends Activity
             if (haveInternet())
             {
 
+                Log.d(TAG, "Internet available begin songs.xml download");
                 progressBar.setVisibility(View.VISIBLE);
                 try
                 {
