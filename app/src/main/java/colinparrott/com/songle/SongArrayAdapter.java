@@ -1,11 +1,17 @@
 package colinparrott.com.songle;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,6 +20,7 @@ import org.w3c.dom.Text;
 import java.util.List;
 
 import colinparrott.com.songle.obj.Song;
+import colinparrott.com.songle.parsers.SongleKmlParser;
 import colinparrott.com.songle.storage.UserPrefsManager;
 
 /**
@@ -36,39 +43,72 @@ public class SongArrayAdapter extends ArrayAdapter<Song>
         this.songs = objects;
     }
 
+
+
+    // Code adapted from: https://www.androidcode.ninja/android-viewholder-pattern-example/
+    @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ViewHolderItem viewHolder;
 
-        View rowView = inflater.inflate(R.layout.list_row, parent, false);
 
-        Song s = this.getItem(position);
-
-        if(s != null)
+        if(convertView == null)
         {
-            LinearLayout layout = rowView.findViewById(R.id.listLinearLayout);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.list_row, parent, false);
 
-            boolean completed = songCompleted(s);
+
+            viewHolder = new ViewHolderItem();
+            viewHolder.txtNum = (TextView) convertView.findViewById(R.id.txtRowNum);
+            viewHolder.txtTitle = (TextView)convertView.findViewById(R.id.txtRowTitle);
+            viewHolder.txtArtist = (TextView)convertView.findViewById(R.id.txtRowArtist);
+            viewHolder.btnPlayVideo = (ImageButton) convertView.findViewById(R.id.imgCompletedPlay);
+
+            convertView.setTag(viewHolder);
+        }
+        else
+        {
+            viewHolder = (ViewHolderItem) convertView.getTag();
+        }
+
+        Song song = songs.get(position);
+
+        if(song != null)
+        {
+            boolean completed = songCompleted(song);
+
+            viewHolder.txtNum.setText(SongleKmlParser.formatNumber(song.getNumber()));
+            ConstraintLayout layout = convertView.findViewById(R.id.ConstraintLayoutList);
 
             if(completed)
             {
                 layout.setBackgroundColor(context.getResources().getColor(R.color.colorPrimaryMedium));
-                ((TextView) rowView.findViewById(R.id.textRowTitle)).setText(s.getTitle());
-                ((TextView) rowView.findViewById(R.id.textRowArtist)).setText(s.getArtist());
-
+                viewHolder.txtTitle.setText(song.getTitle());
+                viewHolder.txtArtist.setText(song.getArtist());
+                viewHolder.btnPlayVideo.setVisibility(View.VISIBLE);
             }
             else
             {
                 layout.setBackgroundColor(context.getResources().getColor(R.color.colorPrimaryDark));
-                ((TextView) rowView.findViewById(R.id.textRowTitle)).setText("Not Guessed");
-                ((TextView) rowView.findViewById(R.id.textRowArtist)).setText("???");
+                viewHolder.txtTitle.setText(R.string.txt_NotGuessed);
+                viewHolder.txtArtist.setText(R.string.txt_Unknown);
+                viewHolder.btnPlayVideo.setVisibility(View.INVISIBLE);
             }
 
+            final String link = song.getLink();
+            viewHolder.btnPlayVideo.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                    context.startActivity(browserIntent);
+                }
+            });
         }
 
-        return rowView;
-
+        return convertView;
     }
 
     public boolean songCompleted(Song s)
@@ -86,5 +126,10 @@ public class SongArrayAdapter extends ArrayAdapter<Song>
         }
 
         return false;
+    }
+
+    static class ViewHolderItem {
+        TextView txtNum, txtTitle, txtArtist;
+        ImageButton btnPlayVideo;
     }
 }

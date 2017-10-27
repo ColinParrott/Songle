@@ -168,7 +168,7 @@ public class SongleKmlParser
      * @param num Number to format
      * @return Number in string format, with a 0 in front if single digit
      */
-    private String formatNumber(int num)
+    public static String formatNumber(int num)
     {
         String numString = String.valueOf(num);
 
