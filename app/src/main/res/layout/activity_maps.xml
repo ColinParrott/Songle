@@ -27,11 +27,24 @@
         android:textSize="24sp"
         android:textStyle="bold"/>
 
+    <Button
+        android:id="@+id/btn_ViewWords"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@+id/txt_Remaining"
+        android:backgroundTint="@color/colorPrimaryMedium"
+        android:text="@string/txt_ViewWords"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:elevation="12dp"
+        android:textStyle="bold"/>
+
     <TextView
         android:id="@+id/txt_Remaining"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/txt_RemainingPlaceholder"
         android:shadowColor="#000000"
         android:shadowDx="0"
@@ -42,7 +55,8 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:visibility="visible"
-        android:layout_alignParentTop="true"
-        android:layout_alignEnd="@+id/btn_guess"/>
+        android:layout_alignBaseline="@+id/btn_ViewWords"
+        android:layout_alignBottom="@+id/btn_ViewWords"
+        android:layout_alignStart="@+id/btn_guess"/>
 
 </RelativeLayout>

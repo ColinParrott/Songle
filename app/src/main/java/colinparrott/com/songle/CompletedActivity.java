@@ -66,6 +66,7 @@ public class CompletedActivity extends Activity
                     UserPrefsManager userPrefsManager = new UserPrefsManager(getSharedPreferences("userDetails", Context.MODE_PRIVATE));
                     int[] songNums = userPrefsManager.getCompletedNumbersInt();
 
+
                     completedNum.setVisibility(View.VISIBLE);
                     completedNum.setText(songNums.length + "/" + songs.size() + " Completed");
 

@@ -20,8 +20,12 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 
@@ -39,6 +43,9 @@ import com.google.android.gms.maps.model.LatLng;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import colinparrott.com.songle.obj.Difficulty;
 import colinparrott.com.songle.obj.Song;
@@ -81,12 +88,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Default latitude to load map at
      */
-    private final float defaultLat = 55.9316097f;
+    private final double defaultLat = 55.9444f;
 
     /**
      * Default longitude to load map at
      */
-    private final float defaultLong = -3.1247421f;
+    private final double defaultLong = -3.18884f;
 
     /**
      * Tag for debugging
@@ -108,6 +115,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private Button guessButton;
 
+    /**
+     * Button pressed to view collected words
+     */
+    private Button viewWordsButton;
+
+    /**
+     * Spinner used to sort collected words list
+     */
+    private Spinner sortSpinner;
 
     /**
      * TextView that shows remaining words(markers) left to collect
@@ -139,6 +155,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        viewWordsButton = findViewById(R.id.btn_ViewWords);
+        viewWordsButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                System.out.println("VIEW WORDS BUTTON PRESSED");
+                onViewWordsButtonPressed();
+            }
+        });
+
+
 
         remainingText = findViewById(R.id.txt_Remaining);
 
@@ -155,6 +183,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .build();
         }
 
+    }
+
+    private void setupSpinner()
+    {
+
+        List<String> categories = new ArrayList<String>();
+
+        categories.add(getString(R.string.txt_SortAlphabetical));
+        categories.add(getString(R.string.txt_SortImportance));
+        categories.add(getString(R.string.txt_SortSongOccurs));
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, R.layout.songle_spinner_item, categories);
+
+        System.out.println(sortSpinner == null);
+        sortSpinner.setAdapter(dataAdapter);
     }
 
     @Override
@@ -226,6 +269,110 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent goToMenu = new Intent(getApplicationContext(), MainActivity.class);
         goToMenu.putExtra("calling_activity", "MapsActivity");
         startActivity(goToMenu);
+    }
+
+    private void onViewWordsButtonPressed()
+    {
+        LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
+        final View prompt = layoutInflater.inflate(R.layout.dialog_foundwords, null);
+        AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
+        promptBuilder.setView(prompt);
+
+        sortSpinner = (Spinner) prompt.findViewById(R.id.spinnerSortWords);
+
+        AlertDialog dialog = promptBuilder.create();
+        dialog.show();
+
+        final sortCategory sort = sortCategory.ALPHABETICAL;
+
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                switch (position)
+                {
+                    case 0:
+                        populateListView(prompt, sortCategory.ALPHABETICAL);
+                        break;
+                    case 1:
+                        populateListView(prompt, sortCategory.IMPORTANCE);
+                        break;
+                    case 2:
+                        populateListView(prompt, sortCategory.SONG_ORDER);
+                        break;
+                    default:
+                        populateListView(prompt, sortCategory.ALPHABETICAL);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
+
+        setupSpinner();
+        populateListView(prompt, sort);
+    }
+
+    private void populateListView(View prompt, sortCategory category)
+    {
+        FoundWordsArrayAdapter listAdapter = new FoundWordsArrayAdapter(this, R.layout.words_list_row, sortFoundWords(songleMap.getFoundWords(), category));
+
+        ListView listView = (ListView) prompt.findViewById(R.id.lstFound);
+        listView.setAdapter(listAdapter);
+    }
+
+    private List<SongleMarkerInfo> sortFoundWords(List<SongleMarkerInfo> words, final sortCategory cat)
+    {
+        System.out.println("SORTING WORD LIST BY: " + cat.name());
+
+        Collections.sort(words, new Comparator<SongleMarkerInfo>()
+        {
+            @Override
+            public int compare(SongleMarkerInfo o1, SongleMarkerInfo o2)
+            {
+                if(cat == sortCategory.ALPHABETICAL)
+                {
+                    return o1.getLyric().toLowerCase().compareTo(o2.getLyric().toLowerCase());
+                }
+                else if(cat == sortCategory.IMPORTANCE)
+                {
+                    return o1.getImportance().compareTo(o2.getImportance()) * -1;
+                }
+                else
+                {
+                    if(o1.getLyricPointer().getLineNumber() > o2.getLyricPointer().getLineNumber())
+                    {
+                        return 1;
+                    }
+                    else if(o1.getLyricPointer().getLineNumber() < o2.getLyricPointer().getLineNumber())
+                    {
+                        return -1;
+                    }
+                    else
+                    {
+                        if(o1.getLyricPointer().getWordNumber() > o2.getLyricPointer().getWordNumber())
+                        {
+                            return 1;
+                        }
+                        else if(o1.getLyricPointer().getWordNumber() < o2.getLyricPointer().getWordNumber())
+                        {
+                            return -1;
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    }
+                }
+            }
+        });
+
+        return words;
     }
 
     /**
@@ -301,6 +448,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         vibrator.vibrate(duration);
     }
+
+
 
     // Override back button press to make sure user wants to quit game
     @Override
@@ -448,6 +597,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void updateRemainingText(int i)
     {
         remainingText.setText(String.valueOf(i) + " words left");
+    }
+
+    private enum sortCategory
+    {
+        ALPHABETICAL,
+        IMPORTANCE,
+        SONG_ORDER
     }
 
 

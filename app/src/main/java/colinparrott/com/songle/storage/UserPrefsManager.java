@@ -92,9 +92,9 @@ public class UserPrefsManager
             return ints;
         }
 
-        // If "completed_songs" key is not in storage, return null as
+        // If "completed_songs" key is not in storage, return empty array as
         // this means user has not completed a song
-        return null;
+        return new int[] {};
     }
 
     /**

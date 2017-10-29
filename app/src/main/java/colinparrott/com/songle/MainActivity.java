@@ -213,6 +213,7 @@ public class MainActivity extends Activity
     @Override
     protected void onResume()
     {
+        System.out.println("ON RESUME");
         progressBar.setVisibility(View.INVISIBLE);
         super.onResume();
     }
@@ -241,8 +242,10 @@ public class MainActivity extends Activity
      */
     private void setupGame()
     {
+
         // Ask for location permissions if not already granted
-        if (!haveLocationPermission()) {
+        if (!haveLocationPermission())
+        {
             Log.w(TAG, "Location permission NOT granted. Asking for permission and displaying settings text link.");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
@@ -254,10 +257,11 @@ public class MainActivity extends Activity
             {
 
                 Log.d(TAG, "Internet available begin songs.xml download");
-                progressBar.setVisibility(View.VISIBLE);
                 try
                 {
+                    progressBar.setVisibility(View.VISIBLE);
                     String songsXmlData = new DownloadXmlTask(null).execute(URL_SONGS_XML).get();
+
                     initialiseGameCreator(songsXmlData, getDifficulty(diffBar.getProgress()));
                 }
                 catch (InterruptedException | ExecutionException e)
@@ -268,7 +272,7 @@ public class MainActivity extends Activity
 
             }
             else
-                {
+            {
 
                 // Display snackbar saying there's no internet connection, allowing user to retry
                 System.out.println("Display no internet snackbar");

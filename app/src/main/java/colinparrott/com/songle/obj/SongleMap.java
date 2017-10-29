@@ -66,7 +66,7 @@ public class SongleMap
     /**
      * List of words the user has found so far
      */
-    private ArrayList<String> foundWords;
+    private ArrayList<SongleMarkerInfo> foundWords;
 
     /**
      * Deal with persistent storage
@@ -132,7 +132,7 @@ public class SongleMap
                 toast(info.getLyric());
                 iterMarkers.remove();
                 m.remove();
-                foundWords.add(info.getLyric());
+                foundWords.add(info);
 
                 mapActivity.updateRemainingText(markers.size());
             }
@@ -182,7 +182,7 @@ public class SongleMap
      * @param importance Importance of the word
      * @return Int pointer to marker icon of respective word importance
      */
-    private int determineMarkerIcon(WordImportance importance)
+    public static int determineMarkerIcon(WordImportance importance)
     {
         switch (importance)
         {
@@ -199,6 +199,11 @@ public class SongleMap
             default:
                 return R.mipmap.marker_unclassified;
         }
+    }
+
+    public ArrayList<SongleMarkerInfo> getFoundWords()
+    {
+        return foundWords;
     }
 
     /**
