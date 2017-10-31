@@ -51,11 +51,11 @@ public class GameCreator
      */
     private static final String TAG = "GameCreator";
 
-    public GameCreator(Context context, SharedPreferences userPrefs)
+    public GameCreator(Context context)
     {
         this.userPrefs = userPrefs;
         this.mainContext = context;
-        userPrefsManager = new UserPrefsManager(userPrefs);
+        userPrefsManager = new UserPrefsManager(context);
     }
 
     /**

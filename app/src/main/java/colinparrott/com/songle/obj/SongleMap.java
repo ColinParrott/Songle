@@ -1,6 +1,5 @@
 package colinparrott.com.songle.obj;
 
-import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -90,7 +90,7 @@ public class SongleMap
     {
         markers = new ArrayList<>();
         foundWords = new ArrayList<>();
-        prefsManager = new UserPrefsManager(mapActivity.getSharedPreferences("userDetails", Context.MODE_PRIVATE));
+        prefsManager = new UserPrefsManager(mapActivity.getApplicationContext());
 
         for(SongleMarkerInfo info : markerInfos)
         {

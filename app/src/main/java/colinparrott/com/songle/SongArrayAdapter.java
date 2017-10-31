@@ -1,6 +1,5 @@
 package colinparrott.com.songle;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,11 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -24,7 +19,8 @@ import colinparrott.com.songle.parsers.SongleKmlParser;
 import colinparrott.com.songle.storage.UserPrefsManager;
 
 /**
- * Created by s1546623 on 26/10/17.
+ * Custom ArrayAdapter used for ListView in CompletedActivity which lists
+ * the songs
  */
 
 public class SongArrayAdapter extends ArrayAdapter<Song>
@@ -81,6 +77,7 @@ public class SongArrayAdapter extends ArrayAdapter<Song>
             viewHolder.txtNum.setText(SongleKmlParser.formatNumber(song.getNumber()));
             ConstraintLayout layout = convertView.findViewById(R.id.ConstraintLayoutList);
 
+            // If song completed show its details otherwise hide it
             if(completed)
             {
                 layout.setBackgroundColor(context.getResources().getColor(R.color.colorPrimaryMedium));
@@ -96,6 +93,7 @@ public class SongArrayAdapter extends ArrayAdapter<Song>
                 viewHolder.btnPlayVideo.setVisibility(View.INVISIBLE);
             }
 
+            // For opening YouTube link for a song
             final String link = song.getLink();
             viewHolder.btnPlayVideo.setOnClickListener(new View.OnClickListener()
             {
@@ -111,9 +109,14 @@ public class SongArrayAdapter extends ArrayAdapter<Song>
         return convertView;
     }
 
+    /**
+     * Check whether user has completed a song
+     * @param s Song to check
+     * @return True if completed; false otherwise
+     */
     public boolean songCompleted(Song s)
     {
-        UserPrefsManager userPrefsManager = new UserPrefsManager(context.getSharedPreferences("userDetails", Context.MODE_PRIVATE));
+        UserPrefsManager userPrefsManager = new UserPrefsManager(context);
         int[] songNums = userPrefsManager.getCompletedNumbersInt();
 
         if(songNums != null)
@@ -128,6 +131,9 @@ public class SongArrayAdapter extends ArrayAdapter<Song>
         return false;
     }
 
+    /**
+     * Class representing an item in the list
+     */
     static class ViewHolderItem {
         TextView txtNum, txtTitle, txtArtist;
         ImageButton btnPlayVideo;

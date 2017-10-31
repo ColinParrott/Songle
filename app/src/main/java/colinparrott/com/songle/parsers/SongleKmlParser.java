@@ -18,11 +18,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import colinparrott.com.songle.downloaders.DownloadKmlTask;
 import colinparrott.com.songle.downloaders.DownloadLyricsTask;
 import colinparrott.com.songle.obj.LyricPointer;
 import colinparrott.com.songle.obj.SongleMarkerInfo;
 import colinparrott.com.songle.obj.WordImportance;
-import colinparrott.com.songle.downloaders.DownloadKmlTask;
 
 /**
  * Class that downloads and parses KML files

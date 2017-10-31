@@ -1,7 +1,7 @@
 package colinparrott.com.songle.obj;
 
 /**
- * Created by Colin on 22/10/2017.
+ * Represents the 5 difficulties a map can have
  */
 
 public enum Difficulty

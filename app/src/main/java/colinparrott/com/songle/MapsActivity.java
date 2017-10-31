@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -28,7 +27,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -40,8 +38,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,9 +45,9 @@ import java.util.List;
 
 import colinparrott.com.songle.obj.Difficulty;
 import colinparrott.com.songle.obj.Song;
-import colinparrott.com.songle.parsers.SongleKmlParser;
 import colinparrott.com.songle.obj.SongleMap;
 import colinparrott.com.songle.obj.SongleMarkerInfo;
+import colinparrott.com.songle.parsers.SongleKmlParser;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener
 {
@@ -138,6 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        // Lock to portrait
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // Get song object passed from GameCreator
@@ -185,6 +182,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * Set up the spinner for selecting the sort method when viewing found words
+     */
     private void setupSpinner()
     {
 
@@ -194,9 +194,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         categories.add(getString(R.string.txt_SortImportance));
         categories.add(getString(R.string.txt_SortSongOccurs));
 
+        // Set spinner's contents
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, R.layout.songle_spinner_item, categories);
-
-        System.out.println(sortSpinner == null);
         sortSpinner.setAdapter(dataAdapter);
     }
 
@@ -271,6 +270,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startActivity(goToMenu);
     }
 
+    /**
+     * Displays dialog showing words user has found
+     */
     private void onViewWordsButtonPressed()
     {
         LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
@@ -318,14 +320,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         populateListView(prompt, sort);
     }
 
+    /**
+     * Updates list view showing found words
+     * @param prompt View to update
+     * @param category Category to sort words by
+     */
     private void populateListView(View prompt, sortCategory category)
     {
         FoundWordsArrayAdapter listAdapter = new FoundWordsArrayAdapter(this, R.layout.words_list_row, sortFoundWords(songleMap.getFoundWords(), category));
-
         ListView listView = (ListView) prompt.findViewById(R.id.lstFound);
         listView.setAdapter(listAdapter);
     }
 
+    /**
+     * Get list of SongleMarkerInfos sorted by the specified category
+     * @param words Words (markers) to sort
+     * @param cat Category to sort by
+     * @return List of sorted SongleMarkerInfos
+     */
     private List<SongleMarkerInfo> sortFoundWords(List<SongleMarkerInfo> words, final sortCategory cat)
     {
         System.out.println("SORTING WORD LIST BY: " + cat.name());
@@ -343,6 +355,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 {
                     return o1.getImportance().compareTo(o2.getImportance()) * -1;
                 }
+                // Sort by line number, if there's a tie then sort by word number
                 else
                 {
                     if(o1.getLyricPointer().getLineNumber() > o2.getLyricPointer().getLineNumber())
@@ -445,7 +458,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void vibrateDevice(long duration)
     {
         Vibrator vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
-
         vibrator.vibrate(duration);
     }
 
@@ -599,6 +611,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         remainingText.setText(String.valueOf(i) + " words left");
     }
 
+    /**
+     * Categories to sort found words by
+     */
     private enum sortCategory
     {
         ALPHABETICAL,

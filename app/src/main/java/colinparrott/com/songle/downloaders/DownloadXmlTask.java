@@ -14,7 +14,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * AsyncTask to download Songs.xml, calls class to parse it and returns a list of Song objects
+ * AsyncTask to download Songs.xml, calls class to parse it and returns a list of Song objects.
+ * Callback implementation adapted from: https://stackoverflow.com/questions/26202568/android-pass-function-reference-to-asynctask
  */
 
 public class DownloadXmlTask extends AsyncTask<String, Void, String>

@@ -1,10 +1,7 @@
 package colinparrott.com.songle;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +11,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import colinparrott.com.songle.obj.Song;
 import colinparrott.com.songle.obj.SongleMap;
 import colinparrott.com.songle.obj.SongleMarkerInfo;
-import colinparrott.com.songle.parsers.SongleKmlParser;
 
 /**
- * Created by Colin on 28/10/2017.
+ * Custom ArrayAdapter for displaying the found words in MapsActivity
  */
 
 public class FoundWordsArrayAdapter extends ArrayAdapter<SongleMarkerInfo>

@@ -1,5 +1,6 @@
 package colinparrott.com.songle.storage;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.util.HashSet;
@@ -19,11 +20,25 @@ public class UserPrefsManager
      */
     private SharedPreferences sharedPrefs;
 
+    /**
+     * Context which called for access
+     */
+    private Context context;
+
+    /**
+     * Key used for storing list of completed songs
+     */
     private static final String COMPLETED_SONGS_KEY = "completed_songs";
 
-    public UserPrefsManager(SharedPreferences sharedPrefs)
+    /**
+     * The key used for storing all data
+     */
+    private static final String USER_DETAILS_KEY = "userDetails";
+
+    public UserPrefsManager(Context context)
     {
-        this.sharedPrefs = sharedPrefs;
+        this.sharedPrefs = context.getSharedPreferences(USER_DETAILS_KEY, Context.MODE_PRIVATE);
+        this.context = context;
     }
 
     /**

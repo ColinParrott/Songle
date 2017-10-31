@@ -13,7 +13,7 @@ import java.util.List;
 import colinparrott.com.songle.obj.Song;
 
 /**
- * Created by Colin on 10/10/2017.
+ * XML parser for songs database - adapted from lecture slides
  */
 
 public class SongsXmlParser

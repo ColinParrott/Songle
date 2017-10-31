@@ -3,14 +3,12 @@ package colinparrott.com.songle;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
-import android.graphics.drawable.shapes.RectShape;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -19,15 +17,12 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
 
 import org.apache.commons.io.IOUtils;
 import org.xmlpull.v1.XmlPullParserException;
@@ -91,7 +86,7 @@ public class MainActivity extends Activity
     private static GameCreator gameCreator;
 
     /**
-     *
+     * SeekBar used to choose difficulty
      */
     private SeekBar diffBar;
 
@@ -140,6 +135,7 @@ public class MainActivity extends Activity
         diffBar = (SeekBar) findViewById(R.id.diffSeek);
         diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorVeryEasy), PorterDuff.Mode.MULTIPLY);
 
+        // Increase slider thumb size and "click" size
         ShapeDrawable thumb = new ShapeDrawable(new OvalShape());
         thumb.getPaint().setColor(getResources().getColor(R.color.colorAccent));
         thumb.setIntrinsicHeight(60);
@@ -160,16 +156,20 @@ public class MainActivity extends Activity
 
             }
 
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar)
             {
 
             }
+
         });
 
     }
 
+    /**
+     * Updates the difficulty text, its colour, the difficulty description and the slider's colour
+     * @param difficulty Chosen difficulty
+     */
     private void updateDifficultyText(Difficulty difficulty)
     {
         TextView txtDiffculty = findViewById(R.id.txt_Difficulty);
@@ -298,6 +298,11 @@ public class MainActivity extends Activity
 
     }
 
+    /**
+     * Get difficulty from SeekBar's progress value
+     * @param progress Value from SeekBar
+     * @return Difficulty from SeekBar
+     */
     private Difficulty getDifficulty(int progress)
     {
         switch (progress)
@@ -317,6 +322,11 @@ public class MainActivity extends Activity
         }
     }
 
+    /**
+     * Create GameCreator instance and let it up set up a new game
+     * @param data Song database content
+     * @param chosenDifficulty Difficulty to create new game on
+     */
     private void initialiseGameCreator(String data, Difficulty chosenDifficulty)
     {
         SongsXmlParser xmlParser = new SongsXmlParser();
@@ -332,7 +342,7 @@ public class MainActivity extends Activity
             {
                 Log.d(TAG, "Successfully retrieved and parsed songs.xml");
 
-                gameCreator = new GameCreator(this, getSharedPreferences(PREFS_NAME, MODE_PRIVATE));
+                gameCreator = new GameCreator(this);
                 gameCreator.createGame(songs, chosenDifficulty);
             }
 
