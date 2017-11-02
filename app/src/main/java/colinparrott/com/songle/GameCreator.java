@@ -124,7 +124,8 @@ public class GameCreator
         }
 
         // Returns a random song from uncompleted song list (or from all songs if user has completed EVERY song)
-        return songs.get(new Random().nextInt(songs.size()));
+        //return songs.get(new Random().nextInt(songs.size()));
+        return new Song(17, "REM","It's the end of the world as we know it (and I feel fine)","https://youtu.be/Z0GFRcFm-aY");
     }
 
     /**
