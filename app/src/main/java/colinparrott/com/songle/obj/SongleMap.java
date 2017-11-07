@@ -1,5 +1,6 @@
 package colinparrott.com.songle.obj;
 
+import android.support.annotation.VisibleForTesting;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -271,9 +272,14 @@ public class SongleMap
      * @param s String to format
      * @return Normalised string for lenient comparisons
      */
-    private String normaliseString(String s)
+    @VisibleForTesting
+    public static String normaliseString(String s)
     {
-        return s.replaceAll("\\p{P}", "").replace(" ", "").toLowerCase().trim();
+        return s.replaceAll("\\(.*?\\)","") // Remove text between parentheses and the parentheses themselves (https://stackoverflow.com/questions/5636048/regular-expression-to-replace-content-between-parentheses)
+                .replaceAll("\\p{P}", "") // Remove punctuation
+                .replace(" ", "") // Remove all spaces
+                .toLowerCase() // Make lowercase
+                .trim(); // Trim should be unneeded but no harm
     }
 
 }
