@@ -135,7 +135,9 @@ public class SongleMap
                 m.remove();
                 foundWords.add(info);
 
+                // Update remaining text and update found words view
                 mapActivity.updateRemainingText(markers.size());
+                mapActivity.updateFoundWordsView();
             }
         }
     }

@@ -126,6 +126,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private TextView remainingText;
 
+    /**
+     * View that displays found words
+     */
+    private View wordsPrompt;
 
 
     @Override
@@ -276,16 +280,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void onViewWordsButtonPressed()
     {
         LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
-        final View prompt = layoutInflater.inflate(R.layout.dialog_foundwords, null);
+        wordsPrompt = layoutInflater.inflate(R.layout.dialog_foundwords, null);
         AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
-        promptBuilder.setView(prompt);
+        promptBuilder.setView(wordsPrompt);
 
-        sortSpinner = (Spinner) prompt.findViewById(R.id.spinnerSortWords);
+        sortSpinner = (Spinner) wordsPrompt.findViewById(R.id.spinnerSortWords);
 
         AlertDialog dialog = promptBuilder.create();
         dialog.show();
 
         final sortCategory sort = sortCategory.ALPHABETICAL;
+        final View prompt = wordsPrompt;
 
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
@@ -317,7 +322,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         setupSpinner();
-        populateListView(prompt, sort);
+        populateListView(wordsPrompt, sortCategory.ALPHABETICAL);
     }
 
     /**
@@ -609,6 +614,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void updateRemainingText(int i)
     {
         remainingText.setText(String.valueOf(i) + " words left");
+    }
+
+    /**
+     * Updates found words list
+     */
+    public void updateFoundWordsView()
+    {
+        if(sortSpinner != null && wordsPrompt.isShown())
+        {
+            populateListView(wordsPrompt, sortCategory.values()[sortSpinner.getSelectedItemPosition()]);
+        }
     }
 
     /**
