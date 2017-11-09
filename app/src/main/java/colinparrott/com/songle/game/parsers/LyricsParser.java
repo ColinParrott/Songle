@@ -1,8 +1,9 @@
-package colinparrott.com.songle.parsers;
+package colinparrott.com.songle.game.parsers;
 
 import android.util.Log;
 
-import colinparrott.com.songle.obj.LyricPointer;
+import colinparrott.com.songle.game.obj.LyricPointer;
+
 
 /**
  * Utility class for parsing lyrics
