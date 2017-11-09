@@ -39,12 +39,22 @@
         android:textStyle="bold"
         android:visibility="invisible"/>
 
+    <Switch
+        android:id="@+id/switchSort"
+        android:layout_width="194dp"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_SortByCompleted"
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent"
+        android:theme="@style/SongleSwitch"
+        android:textStyle="bold" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="7dp"
         android:background="@color/colorAccent"
-        app:srcCompat="?android:attr/dividerHorizontal"/>
+        app:srcCompat="?android:attr/dividerHorizontal" />
 
     <ListView
         android:id="@+id/lstCompleted"

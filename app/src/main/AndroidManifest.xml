@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".menu.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,10 +34,10 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".game.MapsActivity"
             android:label="@string/title_activity_maps"></activity>
 
-        <activity android:name=".CompletedActivity"/>
+        <activity android:name=".completed.CompletedActivity"/>
     </application>
 
 </manifest>

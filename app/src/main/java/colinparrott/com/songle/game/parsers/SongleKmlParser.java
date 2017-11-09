@@ -1,4 +1,4 @@
-package colinparrott.com.songle.parsers;
+package colinparrott.com.songle.game.parsers;
 
 import android.content.Context;
 import android.util.Log;
@@ -18,11 +18,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-import colinparrott.com.songle.downloaders.DownloadKmlTask;
-import colinparrott.com.songle.downloaders.DownloadLyricsTask;
-import colinparrott.com.songle.obj.LyricPointer;
-import colinparrott.com.songle.obj.SongleMarkerInfo;
-import colinparrott.com.songle.obj.WordImportance;
+import colinparrott.com.songle.game.download.DownloadKmlTask;
+import colinparrott.com.songle.game.download.DownloadLyricsTask;
+import colinparrott.com.songle.game.obj.LyricPointer;
+import colinparrott.com.songle.game.obj.SongleMarkerInfo;
+import colinparrott.com.songle.game.obj.WordImportance;
 
 /**
  * Class that downloads and parses KML files

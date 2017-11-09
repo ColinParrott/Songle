@@ -3,8 +3,10 @@ package colinparrott.com.songle.obj;
 import org.junit.Test;
 
 import colinparrott.com.songle.R;
+import colinparrott.com.songle.game.SongleMap;
+import colinparrott.com.songle.game.obj.WordImportance;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Colin on 07/11/2017.

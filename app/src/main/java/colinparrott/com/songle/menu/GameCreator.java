@@ -1,4 +1,4 @@
-package colinparrott.com.songle;
+package colinparrott.com.songle.menu;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import colinparrott.com.songle.obj.Difficulty;
-import colinparrott.com.songle.obj.Song;
+import colinparrott.com.songle.game.MapsActivity;
+import colinparrott.com.songle.game.obj.Difficulty;
+import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.storage.UserPrefsManager;
 
 /**
@@ -124,8 +125,8 @@ public class GameCreator
         }
 
         // Returns a random song from uncompleted song list (or from all songs if user has completed EVERY song)
-        //return songs.get(new Random().nextInt(songs.size()));
-        return new Song(17, "REM","It's the end of the world as we know it (and I feel fine)","https://youtu.be/Z0GFRcFm-aY");
+        return songs.get(new Random().nextInt(songs.size()));
+        //return new Song(17, "REM","It's the end of the world as we know it (and I feel fine)","https://youtu.be/Z0GFRcFm-aY");
     }
 
     /**

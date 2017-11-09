@@ -1,4 +1,4 @@
-package colinparrott.com.songle;
+package colinparrott.com.songle.game.obj;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,8 +11,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import colinparrott.com.songle.obj.SongleMap;
-import colinparrott.com.songle.obj.SongleMarkerInfo;
+import colinparrott.com.songle.R;
+import colinparrott.com.songle.game.SongleMap;
 
 /**
  * Custom ArrayAdapter for displaying the found words in MapsActivity

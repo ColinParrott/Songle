@@ -1,4 +1,4 @@
-package colinparrott.com.songle.obj;
+package colinparrott.com.songle.game.obj;
 
 import com.google.android.gms.maps.model.LatLng;
 

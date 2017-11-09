@@ -20,5 +20,16 @@
         <item name="colorControlNormal">@color/colorPrimaryMedium</item>
         <item name="colorControlActivated">@color/colorAccent</item>
     </style>
+    
+    <style name="SongleSwitch" parent="Theme.AppCompat">
+        <!-- active thumb & track color (30% transparency) -->
+        <item name="colorControlActivated">@color/colorPrimary</item>
+
+        <!-- inactive thumb color -->
+        <item name="colorSwitchThumbNormal">@color/colorPrimaryTransparent</item>
+
+        <!-- inactive track color (30% transparency) -->
+        <item name="android:colorForeground">@color/colorPrimaryTransparent</item>
+    </style>
 
 </resources>

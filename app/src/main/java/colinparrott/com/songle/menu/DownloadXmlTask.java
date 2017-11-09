@@ -1,4 +1,4 @@
-package colinparrott.com.songle.downloaders;
+package colinparrott.com.songle.menu;
 
 
 import android.content.Context;
@@ -23,7 +23,6 @@ public class DownloadXmlTask extends AsyncTask<String, Void, String>
 
     private static final String TAG = "DownloadXmlTask";
     private String fileName;
-    private Context context;
 
     public interface TaskListener
     {
