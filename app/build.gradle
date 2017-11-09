@@ -19,6 +19,11 @@ android {
     }
     productFlavors {
     }
+
+    // Needed so JUnit tests can run on code that uses Android Logging otherwise error is thrown when testing, see: http://g.co/androidstudio/not-mocked
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {

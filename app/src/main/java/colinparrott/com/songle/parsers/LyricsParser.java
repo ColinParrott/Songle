@@ -1,5 +1,7 @@
 package colinparrott.com.songle.parsers;
 
+import android.util.Log;
+
 import colinparrott.com.songle.obj.LyricPointer;
 
 /**
@@ -8,6 +10,9 @@ import colinparrott.com.songle.obj.LyricPointer;
 
 public class LyricsParser
 {
+
+    private static final String TAG = "LyricsParser";
+
     /**
      * Gets lyric at specified location in a lyrics string
      * @param lyricString String with lyrics of whole song
@@ -16,20 +21,36 @@ public class LyricsParser
      */
     public static String getLyric(String lyricString, LyricPointer pointer)
     {
-        // Split lines
-        String[] lines = lyricString.split("\n");
+        if(lyricString != null && pointer != null)
+        {
+            // Split lines
+            String[] lines = lyricString.split("\n");
 
-        // Get specified line - minus 1 since line numbering in lyrics file begins at 1 not 0
-        String theLine = lines[pointer.getLineNumber() - 1];
+            try
+            {
+                // Get specified line - minus 1 since line numbering in lyrics file begins at 1 not 0
+                String theLine = lines[pointer.getLineNumber() - 1];
 
-        // Split off first part with line number and tab - take 2nd element i.e. the actual lyric line
-        // Then split on spaces to get each word in a list
-        String[] theWords = theLine.split("\t")[1].split(" ");
+                // Split off first part with line number and tab - take 2nd element i.e. the actual lyric line
+                // Then split on spaces to get each word in a list
+                String[] theWords = theLine.split("\t")[1].split(" ");
 
-        // Get the specified word in the line - minus 1 again since word numbering begins at 1 not 0
-        String theWord = theWords[pointer.getWordNumber() - 1].trim();
+                // Get the specified word in the line - minus 1 again since word numbering begins at 1 not 0
+                String theWord = theWords[pointer.getWordNumber() - 1].trim();
 
-       // System.out.println("Pointer: " + pointer + "\tLine: " + theLine + "\tWord: " + theWord);
-        return theWord;
+                // System.out.println("Pointer: " + pointer + "\tLine: " + theLine + "\tWord: " + theWord);
+                return theWord;
+            }
+            catch (ArrayIndexOutOfBoundsException e)
+            {
+                Log.e(TAG, e.getMessage());
+            }
+        }
+        else
+        {
+            Log.w(TAG, "Lyric string or pointer null");
+        }
+
+        return null;
     }
 }
