@@ -1,4 +1,4 @@
-package colinparrott.com.songle;
+package colinparrott.com.songle.completed;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,13 +16,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import colinparrott.com.songle.downloaders.DownloadXmlTask;
-import colinparrott.com.songle.obj.Song;
-import colinparrott.com.songle.parsers.SongsXmlParser;
+import colinparrott.com.songle.R;
+import colinparrott.com.songle.game.obj.Song;
+import colinparrott.com.songle.menu.DownloadXmlTask;
+import colinparrott.com.songle.menu.MainActivity;
+import colinparrott.com.songle.menu.SongsXmlParser;
 import colinparrott.com.songle.storage.UserPrefsManager;
 
 /**
- * Created by s1546623 on 26/10/17.
+ * Screen for showing user the songs their progress in terms of how many songs they have guessed correctly
  */
 
 public class CompletedActivity extends Activity

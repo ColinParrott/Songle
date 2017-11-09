@@ -1,4 +1,4 @@
-package colinparrott.com.songle;
+package colinparrott.com.songle.completed;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,8 +14,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import colinparrott.com.songle.obj.Song;
-import colinparrott.com.songle.parsers.SongleKmlParser;
+import colinparrott.com.songle.R;
+import colinparrott.com.songle.game.obj.Song;
+import colinparrott.com.songle.game.parsers.SongleKmlParser;
 import colinparrott.com.songle.storage.UserPrefsManager;
 
 /**

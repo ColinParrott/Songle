@@ -1,4 +1,4 @@
-package colinparrott.com.songle;
+package colinparrott.com.songle.game;
 
 import android.Manifest;
 import android.content.Context;
@@ -43,11 +43,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import colinparrott.com.songle.obj.Difficulty;
-import colinparrott.com.songle.obj.Song;
-import colinparrott.com.songle.obj.SongleMap;
-import colinparrott.com.songle.obj.SongleMarkerInfo;
-import colinparrott.com.songle.parsers.SongleKmlParser;
+import colinparrott.com.songle.R;
+import colinparrott.com.songle.game.obj.Difficulty;
+import colinparrott.com.songle.game.obj.FoundWordsArrayAdapter;
+import colinparrott.com.songle.game.obj.Song;
+import colinparrott.com.songle.game.obj.SongleMarkerInfo;
+import colinparrott.com.songle.game.parsers.SongleKmlParser;
+import colinparrott.com.songle.menu.GameCreator;
+import colinparrott.com.songle.menu.MainActivity;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener
 {

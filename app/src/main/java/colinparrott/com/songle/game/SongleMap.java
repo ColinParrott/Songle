@@ -1,4 +1,4 @@
-package colinparrott.com.songle.obj;
+package colinparrott.com.songle.game;
 
 import android.support.annotation.VisibleForTesting;
 import android.view.Gravity;
@@ -18,8 +18,10 @@ import com.google.maps.android.SphericalUtil;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import colinparrott.com.songle.MapsActivity;
 import colinparrott.com.songle.R;
+import colinparrott.com.songle.game.obj.Song;
+import colinparrott.com.songle.game.obj.SongleMarkerInfo;
+import colinparrott.com.songle.game.obj.WordImportance;
 import colinparrott.com.songle.storage.UserPrefsManager;
 
 

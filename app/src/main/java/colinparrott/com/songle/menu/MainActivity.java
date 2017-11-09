@@ -1,4 +1,4 @@
-package colinparrott.com.songle;
+package colinparrott.com.songle.menu;
 
 import android.Manifest;
 import android.app.Activity;
@@ -32,23 +32,13 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import colinparrott.com.songle.downloaders.DownloadXmlTask;
-import colinparrott.com.songle.obj.Difficulty;
-import colinparrott.com.songle.obj.Song;
-import colinparrott.com.songle.parsers.SongsXmlParser;
+import colinparrott.com.songle.R;
+import colinparrott.com.songle.completed.CompletedActivity;
+import colinparrott.com.songle.game.obj.Difficulty;
+import colinparrott.com.songle.game.obj.Song;
 
 public class MainActivity extends Activity
 {
-
-    /**
-     * Play button object
-     */
-    private Button playButton;
-
-    /**
-     * Completed button object
-     */
-    private Button completedButton;
 
     /**
      * ProgressBar object
@@ -81,11 +71,6 @@ public class MainActivity extends Activity
     private static final String PREFS_NAME = "userDetails";
 
     /**
-     * Object to deal with setting up a new game
-     */
-    private static GameCreator gameCreator;
-
-    /**
      * SeekBar used to choose difficulty
      */
     private SeekBar diffBar;
@@ -104,7 +89,10 @@ public class MainActivity extends Activity
         progressBar = (ProgressBar) findViewById(R.id.progBar);
 
         // Get play button
-        playButton = (Button) findViewById(R.id.btn_Play);
+        /*
+      Play button object
+     */
+        Button playButton = (Button) findViewById(R.id.btn_Play);
 
         // Begin new game setup on play button click
         playButton.setOnClickListener(new View.OnClickListener()
@@ -119,7 +107,10 @@ public class MainActivity extends Activity
             }
         });
 
-        completedButton = (Button) findViewById(R.id.btn_Completed);
+        /*
+      Completed button object
+     */
+        Button completedButton = (Button) findViewById(R.id.btn_Completed);
 
         completedButton.setOnClickListener(new View.OnClickListener()
                                            {
@@ -342,7 +333,10 @@ public class MainActivity extends Activity
             {
                 Log.d(TAG, "Successfully retrieved and parsed songs.xml");
 
-                gameCreator = new GameCreator(this);
+                /*
+      Object to deal with setting up a new game
+     */
+                GameCreator gameCreator = new GameCreator(this);
                 gameCreator.createGame(songs, chosenDifficulty);
             }
 

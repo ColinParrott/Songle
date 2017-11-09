@@ -1,4 +1,4 @@
-package colinparrott.com.songle.obj;
+package colinparrott.com.songle.game.obj;
 
 /**
  * Different possible importance of words as defined

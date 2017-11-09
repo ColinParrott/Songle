@@ -1,4 +1,4 @@
-package colinparrott.com.songle.parsers;
+package colinparrott.com.songle.menu;
 
 import android.util.Xml;
 
@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import colinparrott.com.songle.obj.Song;
+import colinparrott.com.songle.game.obj.Song;
 
 /**
  * XML parser for songs database - adapted from lecture slides

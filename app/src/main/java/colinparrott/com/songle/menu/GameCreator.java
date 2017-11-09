@@ -1,4 +1,4 @@
-package colinparrott.com.songle;
+package colinparrott.com.songle.menu;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,10 +7,10 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import colinparrott.com.songle.obj.Difficulty;
-import colinparrott.com.songle.obj.Song;
+import colinparrott.com.songle.game.MapsActivity;
+import colinparrott.com.songle.game.obj.Difficulty;
+import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.storage.UserPrefsManager;
 
 /**

@@ -1,4 +1,4 @@
-package colinparrott.com.songle.downloaders;
+package colinparrott.com.songle.game.download;
 
 
 import android.os.AsyncTask;
