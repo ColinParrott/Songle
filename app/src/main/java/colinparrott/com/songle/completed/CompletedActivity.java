@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.apache.commons.io.IOUtils;
@@ -39,6 +41,11 @@ public class CompletedActivity extends Activity
      */
     private List<Song> songs;
 
+    /**
+     * Array adapter for holding songs
+     */
+    private SongArrayAdapter listAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -70,7 +77,7 @@ public class CompletedActivity extends Activity
                 if (songs != null)
                 {
                     // Set custom ArrayAdapter for list
-                    SongArrayAdapter listAdapter = new SongArrayAdapter(CompletedActivity.super.getApplicationContext(), R.layout.list_row, songs);
+                    listAdapter = new SongArrayAdapter(CompletedActivity.super.getApplicationContext(), R.layout.list_row, songs);
                     listView.setAdapter(listAdapter);
 
                     TextView completedNum = findViewById(R.id.txtViewCompleted);
@@ -92,7 +99,61 @@ public class CompletedActivity extends Activity
         // Execute task
         downloadXmlTask.execute(MainActivity.URL_SONGS_XML);
 
+        // Get switch and create change listener for it
+        Switch sortSwitch = (Switch) findViewById(R.id.switchSort);
+        sortSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if(listAdapter != null)
+                {
+                    updateList(isChecked);
+                }
+            }
+        });
+
     }
+
+
+    /**
+     * Updates list view with list sorted by completed or by song number
+     * @param sortByCompleted Should list be sorted by completed songs first
+     */
+    private void updateList(boolean sortByCompleted)
+    {
+        // Sorts song list by c
+        if(sortByCompleted)
+        {
+            // Sorts by completed, then by song number if equal
+            Collections.sort(songs, new Comparator<Song>() {
+                @Override
+                public int compare(Song o1, Song o2)
+                {
+                    if(listAdapter.songCompleted(o1) && !listAdapter.songCompleted(o2))
+                    {
+                        return -1;
+                    }
+                    else if(listAdapter.songCompleted(o2) && !listAdapter.songCompleted(o1))
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return o1.getNumber() < o2.getNumber() ? -1 : 1;
+                    }
+                }
+            });
+
+        }
+        else
+        {
+            songs = sortSongs(songs);
+        }
+
+        // Update list view
+        listView.setAdapter(listAdapter);
+    }
+
 
     /**
      * Sorts songs by their assigned number in songs.xml (ascending)

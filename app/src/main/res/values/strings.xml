@@ -65,6 +65,7 @@
     <string name="txt_URLPlaceholder" translatable="false"><a href="https://youtu.be/fJ9rUzIMcZQ">https://youtu.be/fJ9rUzIMcZQ</a></string>
 
     <string name="txt_SongList">SONG LIST</string>
+    <string name="txt_SortByCompleted">Sort by completed</string>
     <string name="txt_CompletedPlaceholder">10/18 Completed</string>
     <string name="txt_NotGuessed">Not guessed</string>
     <string name="txt_Unknown">\???</string>
