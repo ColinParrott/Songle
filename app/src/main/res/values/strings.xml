@@ -9,6 +9,7 @@
 
     <string name="txt_NoInternet">No internet connection</string>
     <string name="txt_Retry">Retry</string>
+    <string name="txt_DownloadError">An error occurred downloading latest game data</string>
 
 
     <string name="txt_Ok">OK</string>

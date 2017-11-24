@@ -252,9 +252,30 @@ public class MainActivity extends Activity
                     progressBar.setVisibility(View.VISIBLE);
                     String songsXmlData = new DownloadXmlTask(null).execute(URL_SONGS_XML).get();
 
-                    // TODO: NULL CHECK ON songsXmlData
 
-                    initialiseGameCreator(songsXmlData, getDifficulty(diffBar.getProgress()));
+                    if(songsXmlData != null)
+                    {
+                        initialiseGameCreator(songsXmlData, getDifficulty(diffBar.getProgress()));
+                    }
+                    else
+                    {
+                        // Display snackbar saying there an error occurred downloading data and allow user to retry
+                        System.out.println("Display no download failure snackbar");
+                        Snackbar downloadFailBar = Snackbar.make(findViewById(R.id.constraint_layout), R.string.txt_DownloadError, Snackbar.LENGTH_INDEFINITE);
+                        ((View) downloadFailBar .getView()).setBackgroundColor(getResources().getColor(R.color.colorPrimaryMedium));
+
+
+                        downloadFailBar .setAction(R.string.txt_Retry, new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                setupGame();
+                            }
+                        });
+
+                        downloadFailBar.show();
+                    }
                 }
                 catch (InterruptedException | ExecutionException e)
                 {
