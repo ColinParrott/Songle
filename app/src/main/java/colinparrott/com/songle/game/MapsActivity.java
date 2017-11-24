@@ -44,7 +44,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import colinparrott.com.songle.R;
-import colinparrott.com.songle.game.obj.Difficulty;
+import colinparrott.com.songle.menu.Difficulty;
 import colinparrott.com.songle.game.obj.FoundWordsArrayAdapter;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.game.obj.SongleMarkerInfo;
@@ -361,6 +361,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 else if(cat == sortCategory.IMPORTANCE)
                 {
+                    // Reverse order to get most important first
                     return o1.getImportance().compareTo(o2.getImportance()) * -1;
                 }
                 // Sort by line number, if there's a tie then sort by word number
@@ -481,7 +482,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         builder.setTitle("Do you want to quit?");
         builder.setMessage("All progress will be lost!");
-
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
                 {
                     @Override
@@ -574,6 +574,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnectionFailed(ConnectionResult connectionResult)
     {
         System.out.println(">>>> onConnectionFailed");
+
+        // If yes go back by calling super's method if not, close window and do nothing
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        builder.setTitle("An unresolvable error has occurred");
+        builder.setMessage("You will be returned to the main menu.");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                MapsActivity.super.onBackPressed();
+            }
+        });
+
+        builder.show();
     }
 
     @Override

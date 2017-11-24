@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Random;
 
 import colinparrott.com.songle.game.MapsActivity;
-import colinparrott.com.songle.game.obj.Difficulty;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.storage.UserPrefsManager;
 
@@ -85,7 +84,7 @@ public class GameCreator
 
         // If user has completed at least one song and user hasn't completed every song then
         // remove completed songs from list
-        if(completedNumbers != null && completedNumbers.length < songs.size())
+        if(completedNumbers.length > 0 && completedNumbers.length < songs.size())
         {
 
             System.out.println("COMPLETED AMOUNT: " + completedNumbers.length);

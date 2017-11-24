@@ -1,4 +1,4 @@
-package colinparrott.com.songle.game.obj;
+package colinparrott.com.songle.menu;
 
 /**
  * Represents the 5 difficulties a map can have

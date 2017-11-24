@@ -33,7 +33,7 @@ public class UserPrefsManager
     /**
      * The key used for storing all data
      */
-    private static final String USER_DETAILS_KEY = "userDetails";
+    private static final String  USER_DETAILS_KEY = "userDetails";
 
     public UserPrefsManager(Context context)
     {

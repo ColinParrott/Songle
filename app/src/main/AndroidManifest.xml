@@ -37,7 +37,7 @@
             android:name=".game.MapsActivity"
             android:label="@string/title_activity_maps"></activity>
 
-        <activity android:name=".completed.CompletedActivity"/>
+        <activity android:name=".progress.ProgressActivity"/>
     </application>
 
 </manifest>

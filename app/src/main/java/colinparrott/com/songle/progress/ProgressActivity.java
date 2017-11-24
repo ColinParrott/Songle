@@ -1,4 +1,4 @@
-package colinparrott.com.songle.completed;
+package colinparrott.com.songle.progress;
 
 import android.app.Activity;
 import android.content.Context;
@@ -29,7 +29,7 @@ import colinparrott.com.songle.storage.UserPrefsManager;
  * Screen for showing user the songs their progress in terms of how many songs they have guessed correctly
  */
 
-public class CompletedActivity extends Activity
+public class ProgressActivity extends Activity
 {
     /**
      * ListView for displaying songs
@@ -71,13 +71,13 @@ public class CompletedActivity extends Activity
                 }
                 catch (XmlPullParserException | IOException e)
                 {
-                    System.out.println("[CompletedActivity] Error occurred parsing songs.");
+                    System.out.println("[ProgressActivity] Error occurred parsing songs.");
                 }
 
                 if (songs != null)
                 {
                     // Set custom ArrayAdapter for list
-                    listAdapter = new SongArrayAdapter(CompletedActivity.super.getApplicationContext(), R.layout.list_row, songs);
+                    listAdapter = new SongArrayAdapter(ProgressActivity.super.getApplicationContext(), R.layout.list_row, songs);
                     listView.setAdapter(listAdapter);
 
                     TextView completedNum = findViewById(R.id.txtViewCompleted);

@@ -33,8 +33,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import colinparrott.com.songle.R;
-import colinparrott.com.songle.completed.CompletedActivity;
-import colinparrott.com.songle.game.obj.Difficulty;
+import colinparrott.com.songle.progress.ProgressActivity;
 import colinparrott.com.songle.game.obj.Song;
 
 public class MainActivity extends Activity
@@ -118,7 +117,7 @@ public class MainActivity extends Activity
                                                public void onClick(View v)
                                                {
                                                    Log.d(TAG, "Completed button clicked");
-                                                   Intent intent = new Intent(MainActivity.super.getApplicationContext(), CompletedActivity.class);
+                                                   Intent intent = new Intent(MainActivity.super.getApplicationContext(), ProgressActivity.class);
                                                    startActivity(intent);
                                                }
                                            });
@@ -252,6 +251,8 @@ public class MainActivity extends Activity
                 {
                     progressBar.setVisibility(View.VISIBLE);
                     String songsXmlData = new DownloadXmlTask(null).execute(URL_SONGS_XML).get();
+
+                    // TODO: NULL CHECK ON songsXmlData
 
                     initialiseGameCreator(songsXmlData, getDifficulty(diffBar.getProgress()));
                 }

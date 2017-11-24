@@ -1,4 +1,4 @@
-package colinparrott.com.songle.completed;
+package colinparrott.com.songle.progress;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +20,7 @@ import colinparrott.com.songle.game.parsers.SongleKmlParser;
 import colinparrott.com.songle.storage.UserPrefsManager;
 
 /**
- * Custom ArrayAdapter used for ListView in CompletedActivity which lists
+ * Custom ArrayAdapter used for ListView in ProgressActivity which lists
  * the songs
  */
 
