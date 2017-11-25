@@ -13,6 +13,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class SongleMapTest
 {
+
+    // Checks the correct marker icons are returned
     @Test
     public void determineMarkerIconCorrect() throws Exception
     {
@@ -23,6 +25,7 @@ public class SongleMapTest
         assertEquals(R.mipmap.marker_veryinteresting, SongleMap.determineMarkerIcon(WordImportance.VERY_INTERESTING));
     }
 
+    // Tests string normalisation method using for guess comparisons
     @Test
     public void normaliseStringCorrect() throws Exception
     {

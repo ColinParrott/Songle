@@ -13,6 +13,7 @@ import static org.junit.Assert.*;
  */
 public class LyricsParserTest
 {
+    // Tests correct lyric is obtained
     @Test
     public void getLyricCorrect() throws Exception
     {
