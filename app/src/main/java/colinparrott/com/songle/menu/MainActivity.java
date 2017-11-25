@@ -14,6 +14,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -33,8 +34,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import colinparrott.com.songle.R;
-import colinparrott.com.songle.progress.ProgressActivity;
 import colinparrott.com.songle.game.obj.Song;
+import colinparrott.com.songle.progress.ProgressActivity;
 
 public class MainActivity extends Activity
 {
@@ -316,7 +317,8 @@ public class MainActivity extends Activity
      * @param progress Value from SeekBar
      * @return Difficulty from SeekBar
      */
-    private Difficulty getDifficulty(int progress)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public Difficulty getDifficulty(int progress)
     {
         switch (progress)
         {
@@ -355,9 +357,7 @@ public class MainActivity extends Activity
             {
                 Log.d(TAG, "Successfully retrieved and parsed songs.xml");
 
-                /*
-      Object to deal with setting up a new game
-     */
+                // Object to deal with setting up a new game
                 GameCreator gameCreator = new GameCreator(this);
                 gameCreator.createGame(songs, chosenDifficulty);
             }

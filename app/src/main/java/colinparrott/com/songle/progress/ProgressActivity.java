@@ -3,6 +3,7 @@ package colinparrott.com.songle.progress;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ListView;
@@ -124,26 +125,7 @@ public class ProgressActivity extends Activity
         // Sorts song list by c
         if(sortByCompleted)
         {
-            // Sorts by completed, then by song number if equal
-            Collections.sort(songs, new Comparator<Song>() {
-                @Override
-                public int compare(Song o1, Song o2)
-                {
-                    if(listAdapter.songCompleted(o1) && !listAdapter.songCompleted(o2))
-                    {
-                        return -1;
-                    }
-                    else if(listAdapter.songCompleted(o2) && !listAdapter.songCompleted(o1))
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        return o1.getNumber() < o2.getNumber() ? -1 : 1;
-                    }
-                }
-            });
-
+            songs = sortByCompleted(songs);
         }
         else
         {
@@ -156,11 +138,43 @@ public class ProgressActivity extends Activity
 
 
     /**
+     * Sorts songs by completed first, then by number on ties
+     * @param songs List of songs to sort
+     * @return Songs sorted by completed
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public List<Song> sortByCompleted(List<Song> songs)
+    {
+        // Sorts by completed, then by song number if equal
+        Collections.sort(songs, new Comparator<Song>() {
+            @Override
+            public int compare(Song o1, Song o2)
+            {
+                if(isCompleted(o1) && !isCompleted(o2))
+                {
+                    return -1;
+                }
+                else if(isCompleted(o2) && !isCompleted(o1))
+                {
+                    return 1;
+                }
+                else
+                {
+                    return o1.getNumber() < o2.getNumber() ? -1 : 1;
+                }
+            }
+        });
+
+        return songs;
+    }
+
+    /**
      * Sorts songs by their assigned number in songs.xml (ascending)
      * @param songs List of songs to sort
      * @return Songs sorted by number (ascending order)
      */
-    private List<Song> sortSongs(List<Song> songs)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public List<Song> sortSongs(List<Song> songs)
     {
         Collections.sort(songs, new Comparator<Song>()
         {
@@ -174,10 +188,16 @@ public class ProgressActivity extends Activity
         return songs;
     }
 
+    public boolean isCompleted(Song s)
+    {
+        return listAdapter.songCompleted(s);
+    }
+
     @Override
     protected void onResume()
     {
         super.onResume();
     }
+
 
 }
