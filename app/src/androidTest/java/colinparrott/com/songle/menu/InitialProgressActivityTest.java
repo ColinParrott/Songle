@@ -17,6 +17,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import colinparrott.com.songle.R;
+import colinparrott.com.songle.progress.ProgressActivity;
+import colinparrott.com.songle.storage.UserPrefsManager;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -25,11 +27,9 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.startsWith;
 
 /**
- * Checks progress acitivty displays correctly with no songs completed
+ * Checks progress activity displays correctly with no songs completed
  */
 
 @LargeTest
@@ -39,8 +39,13 @@ public class InitialProgressActivityTest {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
+    @Rule
+    public ActivityTestRule<ProgressActivity> mProgressActivityTestRule = new ActivityTestRule<>(ProgressActivity.class);
+
     @Test
-    public void initialProgressActivityTest() {
+    public void initialProgressActivityTest()
+    {
+        // Hit progress button
         ViewInteraction button = onView(
                 allOf(withId(R.id.btn_Completed), withText("Progress"),
                         childAtPosition(
@@ -52,6 +57,7 @@ public class InitialProgressActivityTest {
                         isDisplayed()));
         button.perform(click());
 
+        // Make sure title displays correctly
         ViewInteraction textView = onView(
                 allOf(withId(R.id.textView6), withText("SONG LIST"),
                         childAtPosition(
@@ -63,20 +69,22 @@ public class InitialProgressActivityTest {
                         isDisplayed()));
         textView.check(matches(withText("SONG LIST")));
 
+        // Get number of completed songs and total number of songs available
+        UserPrefsManager userPrefsManager = new UserPrefsManager(mActivityTestRule.getActivity());
+        int numSongs = userPrefsManager.getCompletedNumbersInt().length;
+        int totalSongs = mProgressActivityTestRule.getActivity().getNumberOfSongs();
+
+        // Check text showing number completed out of total number songs available is correct
         ViewInteraction textView_ = onView(
                 allOf(withId(R.id.txtViewCompleted),
                         isDisplayed()));
-        textView_.check(matches(allOf(withText(startsWith("0/")), withText(endsWith("Completed")))));
+        textView_.check(matches(withText(numSongs + "/" + totalSongs + " Completed")));
 
+        // Check switch is displayed
         ViewInteraction switch_ = onView(
                 allOf(withId(R.id.switchSort),
                         isDisplayed()));
         switch_.check(matches(isDisplayed()));
-
-        ViewInteraction textView3 = onView(
-                allOf(withId(R.id.textView6), withText("SONG LIST"),
-                        isDisplayed()));
-        textView3.check(matches(withText("SONG LIST")));
 
     }
 
