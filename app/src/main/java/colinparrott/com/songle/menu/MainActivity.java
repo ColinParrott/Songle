@@ -77,6 +77,8 @@ public class MainActivity extends Activity
 
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
+    private GameCreator gameCreator;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -358,7 +360,7 @@ public class MainActivity extends Activity
                 Log.d(TAG, "Successfully retrieved and parsed songs.xml");
 
                 // Object to deal with setting up a new game
-                GameCreator gameCreator = new GameCreator(this);
+                gameCreator = new GameCreator(this);
                 gameCreator.createGame(songs, chosenDifficulty);
             }
 
@@ -439,5 +441,11 @@ public class MainActivity extends Activity
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    @VisibleForTesting
+    public GameCreator getGameCreator()
+    {
+        return gameCreator;
     }
 }

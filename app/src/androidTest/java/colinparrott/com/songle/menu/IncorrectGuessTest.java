@@ -1,4 +1,4 @@
-package colinparrott.com.songle;
+package colinparrott.com.songle.menu;
 
 
 import android.support.test.espresso.ViewInteraction;
@@ -16,10 +16,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import colinparrott.com.songle.menu.MainActivity;
+import colinparrott.com.songle.R;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -29,15 +31,13 @@ import static org.hamcrest.Matchers.allOf;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class BlankGuessTest
-{
+public class IncorrectGuessTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void blankGuessTest()
-    {
+    public void incorrectGuessTest() {
         ViewInteraction button = onView(
                 allOf(withId(R.id.btn_Play), withText("Play"),
                         childAtPosition(
@@ -68,6 +68,16 @@ public class BlankGuessTest
                         isDisplayed()));
         button2.perform(click());
 
+        ViewInteraction editText = onView(
+                allOf(withId(R.id.edit_guess),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.custom),
+                                        0),
+                                1),
+                        isDisplayed()));
+        editText.perform(replaceText("dsDAS/ASD$23-423ED"), closeSoftKeyboard());
+
         ViewInteraction appCompatButton = onView(
                 allOf(withId(android.R.id.button1), withText("Guess"),
                         childAtPosition(
@@ -90,21 +100,17 @@ public class BlankGuessTest
     }
 
     private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position)
-    {
+            final Matcher<View> parentMatcher, final int position) {
 
-        return new TypeSafeMatcher<View>()
-        {
+        return new TypeSafeMatcher<View>() {
             @Override
-            public void describeTo(Description description)
-            {
+            public void describeTo(Description description) {
                 description.appendText("Child at position " + position + " in parent ");
                 parentMatcher.describeTo(description);
             }
 
             @Override
-            public boolean matchesSafely(View view)
-            {
+            public boolean matchesSafely(View view) {
                 ViewParent parent = view.getParent();
                 return parent instanceof ViewGroup && parentMatcher.matches(parent)
                         && view.equals(((ViewGroup) parent).getChildAt(position));

@@ -3,6 +3,7 @@ package colinparrott.com.songle.menu;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -50,6 +51,11 @@ public class GameCreator
      * Debugging tag
      */
     private static final String TAG = "GameCreator";
+
+    /**
+     * For testing purposes
+     */
+    private Song chosenSong;
 
     public GameCreator(Context context)
     {
@@ -124,7 +130,8 @@ public class GameCreator
         }
 
         // Returns a random song from uncompleted song list (or from all songs if user has completed EVERY song)
-        return songs.get(new Random().nextInt(songs.size()));
+        chosenSong = songs.get(new Random().nextInt(songs.size()));
+        return chosenSong;
         //return new Song(17, "REM","It's the end of the world as we know it (and I feel fine)","https://youtu.be/Z0GFRcFm-aY");
     }
 
@@ -138,6 +145,12 @@ public class GameCreator
         intent.putExtra(SONG_MSG, song);
         intent.putExtra(DIFFICULTY_MSG, difficulty);
         mainContext.startActivity(intent);
+    }
+
+    @VisibleForTesting
+    public Song getChosenSong()
+    {
+        return chosenSong;
     }
 
 

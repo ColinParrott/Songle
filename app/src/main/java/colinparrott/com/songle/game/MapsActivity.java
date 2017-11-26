@@ -10,6 +10,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -44,11 +45,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import colinparrott.com.songle.R;
-import colinparrott.com.songle.menu.Difficulty;
 import colinparrott.com.songle.game.obj.FoundWordsArrayAdapter;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.game.obj.SongleMarkerInfo;
 import colinparrott.com.songle.game.parsers.SongleKmlParser;
+import colinparrott.com.songle.menu.Difficulty;
 import colinparrott.com.songle.menu.GameCreator;
 import colinparrott.com.songle.menu.MainActivity;
 
@@ -346,7 +347,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param cat Category to sort by
      * @return List of sorted SongleMarkerInfos
      */
-    private List<SongleMarkerInfo> sortFoundWords(List<SongleMarkerInfo> words, final sortCategory cat)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public List<SongleMarkerInfo> sortFoundWords(List<SongleMarkerInfo> words, final sortCategory cat)
     {
         System.out.println("SORTING WORD LIST BY: " + cat.name());
 
@@ -648,7 +650,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Categories to sort found words by
      */
-    private enum sortCategory
+    @VisibleForTesting
+    public enum sortCategory
     {
         ALPHABETICAL,
         IMPORTANCE,

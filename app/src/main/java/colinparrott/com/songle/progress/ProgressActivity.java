@@ -199,5 +199,11 @@ public class ProgressActivity extends Activity
         super.onResume();
     }
 
+    @VisibleForTesting
+    public int getNumberOfSongs()
+    {
+        return songs.size();
+    }
+
 
 }
