@@ -663,11 +663,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     public void updateFoundWordsView()
     {
-        // Debugging
-        if(sortSpinner == null)
-        {
-            Log.e(TAG, "Sort spinner not visible in updateFoundWordsView()");
-        }
 
         if(sortSpinner != null && wordsPrompt.isShown())
         {
