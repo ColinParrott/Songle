@@ -286,4 +286,10 @@ public class SongleMap
                 .trim(); // Trim should be unneeded but no harm
     }
 
+    @VisibleForTesting
+    public ArrayList<Marker> getMarkers()
+    {
+        return markers;
+    }
+
 }

@@ -658,5 +658,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SONG_ORDER
     }
 
+    @VisibleForTesting
+    public SongleMap getSongleMap()
+    {
+        return songleMap;
+    }
+
 
 }

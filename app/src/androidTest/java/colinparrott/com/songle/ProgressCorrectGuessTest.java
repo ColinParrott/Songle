@@ -1,4 +1,4 @@
-package colinparrott.com.songle.menu;
+package colinparrott.com.songle;
 
 
 import android.support.test.espresso.ViewInteraction;
@@ -16,10 +16,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import colinparrott.com.songle.R;
 import colinparrott.com.songle.game.obj.Song;
+import colinparrott.com.songle.menu.MainActivity;
+import colinparrott.com.songle.progress.ProgressActivity;
+import colinparrott.com.songle.storage.UserPrefsManager;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
@@ -30,24 +33,41 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
-
 /**
- * This test makes sure the correct guess dialog appears when the user correctly guesses the song title.
+ * Checks ProgessActivity correctly updates completed count TextView after a song is guessed
  */
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class CorrectGuessTest {
+public class ProgressCorrectGuessTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
+    @Rule
+    public ActivityTestRule<ProgressActivity> mProgressActivityTestRule = new ActivityTestRule<>(ProgressActivity.class);
 
     @Test
-    public void correctGuessTest() {
-
-
+    public void progressCorrectGuessTest() {
         ViewInteraction button = onView(
+                allOf(withId(R.id.btn_Completed), withText("Progress"),
+                        childAtPosition(
+                                allOf(withId(R.id.constraint_layout),
+                                        childAtPosition(
+                                                withId(android.R.id.content),
+                                                0)),
+                                1),
+                        isDisplayed()));
+        button.perform(click());
+
+        // Get number of completed songs and total number of songs available
+        UserPrefsManager userPrefsManager = new UserPrefsManager(mActivityTestRule.getActivity());
+        int startingCompleted = userPrefsManager.getCompletedNumbersInt().length;
+        int startingTotal = mProgressActivityTestRule.getActivity().getNumberOfSongs();
+
+        pressBack();
+
+        ViewInteraction button2 = onView(
                 allOf(withId(R.id.btn_Play), withText("Play"),
                         childAtPosition(
                                 allOf(withId(R.id.constraint_layout),
@@ -56,15 +76,13 @@ public class CorrectGuessTest {
                                                 0)),
                                 0),
                         isDisplayed()));
-        button.perform(click());
-
-
+        button2.perform(click());
 
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(7000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -72,8 +90,7 @@ public class CorrectGuessTest {
         // Get chosen song for map
         Song chosenSong = mActivityTestRule.getActivity().getGameCreator().getChosenSong();
 
-        // Click guess button
-        ViewInteraction button2 = onView(
+        ViewInteraction button3 = onView(
                 allOf(withId(R.id.btn_guess), withText("Guess"),
                         childAtPosition(
                                 childAtPosition(
@@ -81,9 +98,8 @@ public class CorrectGuessTest {
                                         0),
                                 1),
                         isDisplayed()));
-        button2.perform(click());
+        button3.perform(click());
 
-        // Enter guess using song object
         ViewInteraction editText = onView(
                 allOf(withId(R.id.edit_guess),
                         childAtPosition(
@@ -94,7 +110,6 @@ public class CorrectGuessTest {
                         isDisplayed()));
         editText.perform(replaceText(chosenSong.getTitle()), closeSoftKeyboard());
 
-        // Submit guess
         ViewInteraction appCompatButton = onView(
                 allOf(withId(android.R.id.button1), withText("Guess"),
                         childAtPosition(
@@ -104,50 +119,41 @@ public class CorrectGuessTest {
                                 3)));
         appCompatButton.perform(scrollTo(), click());
 
-        // Make sure "correct" text appears
-        ViewInteraction textView = onView(
-                allOf(withId(R.id.textView), withText("Correct!"),
+        ViewInteraction appCompatButton2 = onView(
+                allOf(withId(android.R.id.button1), withText("Ok"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.custom),
+                                        withId(R.id.buttonPanel),
                                         0),
-                                0),
-                        isDisplayed()));
-        textView.check(matches(withText("Correct!")));
+                                3)));
+        appCompatButton2.perform(scrollTo(), click());
 
-        // Check displayed song title is correct
-        ViewInteraction textView2 = onView(
-                allOf(withId(R.id.textViewTitle),
+        ViewInteraction button4 = onView(
+                allOf(withId(R.id.btn_Completed), withText("Progress"),
                         childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                2),
+                                allOf(withId(R.id.constraint_layout),
+                                        childAtPosition(
+                                                withId(android.R.id.content),
+                                                0)),
+                                1),
                         isDisplayed()));
-        textView2.check(matches(withText(chosenSong.getTitle())));
+        button4.perform(click());
 
-        // Check displayed song artist is correct
-        ViewInteraction textView3 = onView(
-                allOf(withId(R.id.textViewArtist),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                4),
+
+        ViewInteraction textView_ = onView(
+                allOf(withId(R.id.txtViewCompleted),
                         isDisplayed()));
-        textView3.check(matches(withText(chosenSong.getArtist())));
 
-        // Check displayed song URL is correct
-        ViewInteraction textView4 = onView(
-                allOf(withId(R.id.textViewURL),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                6),
-                        isDisplayed()));
-        textView4.check(matches(withText(chosenSong.getLink())));
-
+        // Check TextView is correctly updated by 1 if guessed a song without having already guessed them all;
+        // if not then make sure it's still the same as when we started
+        if(startingCompleted < startingTotal)
+        {
+            textView_.check(matches(withText((startingCompleted + 1) + "/" + startingTotal + " Completed")));
+        }
+        else
+        {
+            textView_.check(matches(withText((startingCompleted) + "/" + startingTotal + " Completed")));
+        }
 
     }
 
