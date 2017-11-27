@@ -42,6 +42,7 @@ public class FoundWordsArrayAdapter extends ArrayAdapter<SongleMarkerInfo>
         ViewHolderItem viewHolder;
 
 
+        // If we've not loaded this row before, inflate it otherwise get it's ViewHolder and update it
         if(convertView == null)
         {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -60,8 +61,8 @@ public class FoundWordsArrayAdapter extends ArrayAdapter<SongleMarkerInfo>
             viewHolder = (FoundWordsArrayAdapter.ViewHolderItem) convertView.getTag();
         }
 
+        // Update row with info for that song
         SongleMarkerInfo word = words.get(position);
-
         if(word != null)
         {
 
@@ -74,7 +75,11 @@ public class FoundWordsArrayAdapter extends ArrayAdapter<SongleMarkerInfo>
         return convertView;
     }
 
-    static class ViewHolderItem {
+    /**
+     * Object representing a row
+     */
+    static class ViewHolderItem
+    {
         TextView txtLoc, txtLyric;
         ImageButton imgImportance;
     }

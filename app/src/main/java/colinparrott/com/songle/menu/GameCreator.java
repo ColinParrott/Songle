@@ -70,8 +70,9 @@ public class GameCreator
      */
     public void createGame(List<Song> songList, Difficulty difficulty)
     {
+        Log.d(TAG, "createGame()");
         Song chosenSong = chooseSong(songList);
-        System.out.println("Chosen: " + chosenSong.getNumber() + " " + chosenSong.getTitle());
+        Log.d(TAG, "Chosen: " + chosenSong.getNumber() + " " + chosenSong.getTitle());
         loadMapActivity(chosenSong, difficulty);
     }
 
@@ -132,7 +133,6 @@ public class GameCreator
         // Returns a random song from uncompleted song list (or from all songs if user has completed EVERY song)
         chosenSong = songs.get(new Random().nextInt(songs.size()));
         return chosenSong;
-        //return new Song(17, "REM","It's the end of the world as we know it (and I feel fine)","https://youtu.be/Z0GFRcFm-aY");
     }
 
     /**
@@ -141,6 +141,7 @@ public class GameCreator
      */
     private void loadMapActivity(Song song, Difficulty difficulty)
     {
+        // Pack song object and difficulty into an Intent and pass it to the MapsActivity
         Intent intent = new Intent(mainContext, MapsActivity.class);
         intent.putExtra(SONG_MSG, song);
         intent.putExtra(DIFFICULTY_MSG, difficulty);

@@ -75,8 +75,14 @@ public class MainActivity extends Activity
      */
     private SeekBar diffBar;
 
+    /**
+     * Code for accessing location permission
+     */
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
+    /**
+     * GameCreator object used to create a new maps activity instance
+     */
     private GameCreator gameCreator;
 
 
@@ -106,11 +112,9 @@ public class MainActivity extends Activity
             }
         });
 
-        /*
-      Completed button object
-     */
-        Button completedButton = (Button) findViewById(R.id.btn_Completed);
 
+        // Set up progress button for loading CompletedActivity
+        Button completedButton = (Button) findViewById(R.id.btn_Completed);
         completedButton.setOnClickListener(new View.OnClickListener()
                                            {
                                                @Override
@@ -121,6 +125,7 @@ public class MainActivity extends Activity
                                                    startActivity(intent);
                                                }
                                            });
+
 
         diffBar = (SeekBar) findViewById(R.id.diffSeek);
         diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorVeryEasy), PorterDuff.Mode.MULTIPLY);
@@ -143,13 +148,11 @@ public class MainActivity extends Activity
             @Override
             public void onStartTrackingTouch(SeekBar seekBar)
             {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar)
             {
-
             }
 
         });
@@ -203,7 +206,7 @@ public class MainActivity extends Activity
     @Override
     protected void onResume()
     {
-        System.out.println("ON RESUME");
+        Log.d(TAG, "ON RESUME");
         progressBar.setVisibility(View.INVISIBLE);
         super.onResume();
     }
@@ -215,6 +218,7 @@ public class MainActivity extends Activity
         String caller = getIntent().getStringExtra("calling_activity");
         System.out.println("CALLER: " + caller);
 
+        // Only go back if the calling activity wasn't the MapsActivity on song completion (MapsActivity doesn't pass an intent when user gives up)
         if (caller != null) {
             if (!caller.equals("MapsActivity")) {
                 super.onBackPressed();
@@ -253,6 +257,7 @@ public class MainActivity extends Activity
                     String songsXmlData = new DownloadXmlTask(null).execute(URL_SONGS_XML).get();
 
 
+                    // Attempt to set up game if XML data was downloaded, show error dialog otherwise
                     if(songsXmlData != null)
                     {
                         initialiseGameCreator(songsXmlData, getDifficulty(diffBar.getProgress()));

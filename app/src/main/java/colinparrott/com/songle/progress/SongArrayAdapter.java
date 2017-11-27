@@ -122,8 +122,10 @@ public class SongArrayAdapter extends ArrayAdapter<Song>
 
         if(songNums != null)
         {
-            for (int i : songNums) {
-                if (s.getNumber() == i) {
+            for (int i : songNums)
+            {
+                if (s.getNumber() == i)
+                {
                     return true;
                 }
             }
@@ -135,7 +137,8 @@ public class SongArrayAdapter extends ArrayAdapter<Song>
     /**
      * Class representing an item in the list
      */
-    static class ViewHolderItem {
+    static class ViewHolderItem
+    {
         TextView txtNum, txtTitle, txtArtist;
         ImageButton btnPlayVideo;
     }

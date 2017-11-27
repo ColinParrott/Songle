@@ -2,11 +2,10 @@ package colinparrott.com.songle.parsers;
 
 import org.junit.Test;
 
-
 import colinparrott.com.songle.game.obj.LyricPointer;
 import colinparrott.com.songle.game.parsers.LyricsParser;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Colin on 07/11/2017.

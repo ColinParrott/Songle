@@ -23,6 +23,7 @@ public class DownloadXmlTask extends AsyncTask<String, Void, String>
     private static final String TAG = "DownloadXmlTask";
     private String fileName;
 
+    // TaskListener allows for callback
     public interface TaskListener
     {
         public void onFinished(String result);

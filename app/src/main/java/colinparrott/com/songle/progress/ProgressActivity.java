@@ -75,6 +75,7 @@ public class ProgressActivity extends Activity
                     System.out.println("[ProgressActivity] Error occurred parsing songs.");
                 }
 
+                // If parsing was successful
                 if (songs != null)
                 {
                     // Set custom ArrayAdapter for list
@@ -193,11 +194,6 @@ public class ProgressActivity extends Activity
         return listAdapter.songCompleted(s);
     }
 
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-    }
 
     @VisibleForTesting
     public int getNumberOfSongs()

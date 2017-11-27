@@ -1,6 +1,7 @@
 package colinparrott.com.songle.game;
 
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,6 +77,10 @@ public class SongleMap
      */
     private UserPrefsManager prefsManager;
 
+    /**
+     * Debugging tag
+     */
+    private final String TAG = "SongleMap";
 
     public SongleMap(Song song, ArrayList<SongleMarkerInfo> wordMarkers, GoogleMap map, MapsActivity mapActivity)
     {
@@ -130,12 +135,18 @@ public class SongleMap
 
             if(dist <= CAPTURE_DISTANCE)
             {
+                // Add to found words
                 SongleMarkerInfo info = (SongleMarkerInfo) m.getTag();
-                System.out.println("FOUND WORD: " + info.getLyric());
+                foundWords.add(info);
+                Log.d(TAG, "FOUND WORD: " + info.getLyric());
+
+                // Display word in a toast
                 toast(info.getLyric());
+
+                // Remove marker from map and Iterator
                 iterMarkers.remove();
                 m.remove();
-                foundWords.add(info);
+
 
                 // Update remaining text and update found words view
                 mapActivity.updateRemainingText(markers.size());
@@ -263,11 +274,11 @@ public class SongleMap
      */
     private boolean guessCorrect(String guess)
     {
+
         String actualSong = normaliseString(song.getTitle());
         guess = normaliseString(guess);
 
         return guess.equals(actualSong);
-        // return true;
 
     }
 

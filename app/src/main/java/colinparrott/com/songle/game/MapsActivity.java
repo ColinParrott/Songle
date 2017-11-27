@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -66,14 +67,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleApiClient mGoogleApiClient;
 
     /**
-     *
+     * Code for accessing location permission
      */
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-
-    /**
-     * Tracks whether we have been granted location permission or not
-     */
-    private boolean mLocationPermissionGranted = false;
 
     /**
      * Whether we've set the user's first ever location
@@ -232,6 +228,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void onCorrectGuess()
     {
 
+        // Create and display prompt
         LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
         View prompt = layoutInflater.inflate(R.layout.dialog_guess_success, null);
         AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
@@ -246,12 +243,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         loadMenu();
                     }
                 });
-
         promptBuilder.create().show();
 
+
+        // Set song information on prompt
         ((TextView) prompt.findViewById(R.id.textViewTitle)).setText(song.getTitle());
         ((TextView) prompt.findViewById(R.id.textViewArtist)).setText(song.getArtist());
-
         TextView linkText = prompt.findViewById(R.id.textViewURL);
         linkText.setText(song.getLink());
 
@@ -273,6 +270,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void loadMenu()
     {
+        // Add intent so that MainActivity knows it was started by this activity
         Intent goToMenu = new Intent(getApplicationContext(), MainActivity.class);
         goToMenu.putExtra("calling_activity", "MapsActivity");
         startActivity(goToMenu);
@@ -283,6 +281,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void onViewWordsButtonPressed()
     {
+        // Inflate dialog
         LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
         wordsPrompt = layoutInflater.inflate(R.layout.dialog_foundwords, null);
         AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
@@ -296,6 +295,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final sortCategory sort = sortCategory.ALPHABETICAL;
         final View prompt = wordsPrompt;
 
+        // Change listener for sorting spinner
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
@@ -305,15 +305,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 {
                     case 0:
                         populateListView(prompt, sortCategory.ALPHABETICAL);
+                        Log.d(TAG, "Sorting found words ALPHABETICALLY");
                         break;
                     case 1:
                         populateListView(prompt, sortCategory.IMPORTANCE);
+                        Log.d(TAG, "Sorting found words by IMPORTANCE");
                         break;
                     case 2:
                         populateListView(prompt, sortCategory.SONG_ORDER);
+                        Log.d(TAG, "Sorting found words by SONG_ORDER");
                         break;
                     default:
                         populateListView(prompt, sortCategory.ALPHABETICAL);
+                        Log.w(TAG, "Sorting spinner somehow didn't return one of the 3 expected values: 0,1,2");
                         break;
                 }
             }
@@ -336,8 +340,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void populateListView(View prompt, sortCategory category)
     {
+        Log.w(TAG, "populateListView() - updating found words view");
+
         FoundWordsArrayAdapter listAdapter = new FoundWordsArrayAdapter(this, R.layout.words_list_row, sortFoundWords(songleMap.getFoundWords(), category));
         ListView listView = (ListView) prompt.findViewById(R.id.lstFound);
+
+        // Set ListView to use updated listAdapter
         listView.setAdapter(listAdapter);
     }
 
@@ -350,7 +358,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public List<SongleMarkerInfo> sortFoundWords(List<SongleMarkerInfo> words, final sortCategory cat)
     {
-        System.out.println("SORTING WORD LIST BY: " + cat.name());
+        Log.d(TAG, "SORTING WORD LIST BY: " + cat.name());
 
         Collections.sort(words, new Comparator<SongleMarkerInfo>()
         {
@@ -405,6 +413,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void onGuessButtonPressed()
     {
+        Log.d(TAG, "onGuessButtonPressed()");
+
         LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
         final View prompt = layoutInflater.inflate(R.layout.dialog_guess, null);
         AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
@@ -429,10 +439,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onClick(View v)
                     {
-                        boolean correct = songleMap.handleGuess(editText.getText().toString());
+                        String userGuess = editText.getText().toString();
+                        boolean correct = songleMap.handleGuess(userGuess);
+
+                        Log.d(TAG, "User guessed: " + userGuess);
 
                         if(correct)
                         {
+                            Log.d(TAG, "CORRECT guess");
+
                             // Hides keyboard if guess correct before dialog pops up (keyboard stays up behind dialog if this is not done)
                             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
@@ -442,6 +457,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                         else
                         {
+                            Log.d(TAG, "INCORRECT guess");
+
                             // Change dialog title to "incorrect"
                             TextView statusText = prompt.findViewById(R.id.textView);
                             statusText.setText(R.string.txt_Incorrect);
@@ -453,6 +470,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             // Vibrational feedback
                             vibrateDevice(50L);
+
                         }
                     }
                 });
@@ -478,7 +496,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onBackPressed()
     {
-        System.out.println("back pressed");
+        Log.d(TAG, "Back pressed");
 
         // If yes go back by calling super's method if not, close window and do nothing
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
@@ -527,6 +545,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
         mMap = googleMap;
 
+        // Show user location if we have permission; if not ask for it
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED )
         {
             mMap.setMyLocationEnabled(true);
@@ -536,8 +555,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
+        // Move map camera to default position close to University buildings where KML maps are based around
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLat, defaultLong), 18f));
 
+        // Unwrap difficulty and load map with it
         Intent i = getIntent();
         Difficulty d = (Difficulty) i.getSerializableExtra(GameCreator.DIFFICULTY_MSG);
         loadGameMapData(d);
@@ -577,7 +598,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
         System.out.println(">>>> onConnectionFailed");
 
-        // If yes go back by calling super's method if not, close window and do nothing
+        // Show dialog forcing user to go back to main menu since we've hit an unrecoverable error
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         builder.setCancelable(false);
         builder.setTitle("An unresolvable error has occurred");
@@ -642,6 +663,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     public void updateFoundWordsView()
     {
+        // Debugging
+        if(sortSpinner == null)
+        {
+            Log.e(TAG, "Sort spinner not visible in updateFoundWordsView()");
+        }
+
         if(sortSpinner != null && wordsPrompt.isShown())
         {
             populateListView(wordsPrompt, sortCategory.values()[sortSpinner.getSelectedItemPosition()]);
