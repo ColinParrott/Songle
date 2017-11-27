@@ -579,6 +579,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // If yes go back by calling super's method if not, close window and do nothing
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        builder.setCancelable(false);
         builder.setTitle("An unresolvable error has occurred");
         builder.setMessage("You will be returned to the main menu.");
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()

@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import colinparrott.com.songle.game.obj.Song;
 
@@ -23,6 +24,7 @@ public class ProgressActivityTest
     private static ProgressActivity progressActivity = Mockito.mock(ProgressActivity.class);
 
     private static ArrayList<Song> songs = new ArrayList<Song>();
+    private static ArrayList<Song> songsOriginal;
     private static ArrayList<Song> trueSort = new ArrayList<Song>();
     private static ArrayList<Song> trueCompletedSort = new ArrayList<Song>();
 
@@ -37,7 +39,7 @@ public class ProgressActivityTest
         songs.add(new Song(1, "Madonna", "Vogue", "x"));
         songs.add(new Song(4, "David Bowie", "Life on Mars?", "x"));
         songs.add(new Song(2, "Blondie", "Heart of Glass", "x"));
-        Collections.shuffle(songs);
+
 
         // Desired order when sorting by number
         trueSort.add(new Song(1, "Madonna", "Vogue", "x"));
@@ -65,6 +67,9 @@ public class ProgressActivityTest
         trueCompletedSort.add(new Song(2, "Blondie", "Heart of Glass", "x"));
         trueCompletedSort.add(new Song(4, "David Bowie", "Life on Mars?", "x"));
 
+        songsOriginal = new ArrayList<>(songs);
+        Collections.shuffle(songs);
+
     }
 
 
@@ -72,9 +77,11 @@ public class ProgressActivityTest
     @Test
     public void sortSongsCorrect() throws Exception
     {
+        List<Song> returned = progressActivity.sortSongs(songs);
+
         for(int i = 0; i < songs.size(); i++)
         {
-            assertEquals(progressActivity.sortSongs(songs).get(i).getNumber(), trueSort.get(i).getNumber());
+            assertEquals(returned.get(i).getNumber(), trueSort.get(i).getNumber());
         }
     }
 
@@ -82,9 +89,11 @@ public class ProgressActivityTest
     @Test
     public void sortByCompletedCorrect() throws Exception
     {
-        for(int i = 0; i < songs.size(); i++)
+        List<Song> returned = progressActivity.sortByCompleted(songs);
+
+        for(int i = 0; i < songsOriginal.size(); i++)
         {
-            assertEquals(progressActivity.sortByCompleted(songs).get(i).getNumber(), trueCompletedSort.get(i).getNumber());
+           assertEquals(returned.get(i).getNumber(), trueCompletedSort.get(i).getNumber());
         }
     }
 

@@ -91,9 +91,6 @@ public class MainActivity extends Activity
         progressBar = (ProgressBar) findViewById(R.id.progBar);
 
         // Get play button
-        /*
-      Play button object
-     */
         Button playButton = (Button) findViewById(R.id.btn_Play);
 
         // Begin new game setup on play button click
