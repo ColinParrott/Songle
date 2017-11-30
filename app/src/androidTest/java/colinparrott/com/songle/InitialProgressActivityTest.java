@@ -1,6 +1,7 @@
 package colinparrott.com.songle;
 
 
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -42,9 +43,13 @@ public class InitialProgressActivityTest {
     @Rule
     public ActivityTestRule<ProgressActivity> mProgressActivityTestRule = new ActivityTestRule<>(ProgressActivity.class);
 
+
     @Test
     public void initialProgressActivityTest()
     {
+
+        Espresso.closeSoftKeyboard();
+
         // Hit progress button
         ViewInteraction button = onView(
                 allOf(withId(R.id.btn_Completed), withText("Progress"),

@@ -1,6 +1,7 @@
 package colinparrott.com.songle;
 
 
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -36,10 +37,15 @@ public class IncorrectGuessTest {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
+
     @Test
-    public void incorrectGuessTest() {
+    public void incorrectGuessTest()
+    {
+
+        Espresso.closeSoftKeyboard();
+
         ViewInteraction button = onView(
-                allOf(withId(R.id.btn_Play), withText("Play"),
+                allOf(withId(R.id.btn_Play),
                         childAtPosition(
                                 allOf(withId(R.id.constraint_layout),
                                         childAtPosition(

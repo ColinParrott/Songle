@@ -1,6 +1,7 @@
 package colinparrott.com.songle;
 
 
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.menu.MainActivity;
+import colinparrott.com.songle.storage.UserPrefsManager;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -43,13 +45,13 @@ public class CorrectGuessTest {
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
 
-
     @Test
     public void correctGuessTest() {
 
+        Espresso.closeSoftKeyboard();
 
         ViewInteraction button = onView(
-                allOf(withId(R.id.btn_Play), withText("Play"),
+                allOf(withId(R.id.btn_Play),
                         childAtPosition(
                                 allOf(withId(R.id.constraint_layout),
                                         childAtPosition(
@@ -70,9 +72,17 @@ public class CorrectGuessTest {
             e.printStackTrace();
         }
 
-        // TODO: SOMEHOW FIX THIS FOR WHEN A GAME'S ALREADY IN PROGRESS
+        Song chosenSong;
         // Get chosen song for map
-        Song chosenSong = mActivityTestRule.getActivity().getGameCreator().getChosenSong();
+        if(mActivityTestRule.getActivity().getGameCreator() != null)
+        {
+            chosenSong = mActivityTestRule.getActivity().getGameCreator().getChosenSong();
+        }
+        else
+        {
+            UserPrefsManager u = new UserPrefsManager(mActivityTestRule.getActivity().getApplicationContext());
+            chosenSong = u.retrieveObject("song", Song.class);
+        }
 
         // Click guess button
         ViewInteraction button2 = onView(

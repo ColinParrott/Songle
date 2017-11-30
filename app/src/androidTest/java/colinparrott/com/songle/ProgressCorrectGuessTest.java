@@ -1,6 +1,7 @@
 package colinparrott.com.songle;
 
 
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -49,6 +50,9 @@ public class ProgressCorrectGuessTest {
 
     @Test
     public void progressCorrectGuessTest() {
+
+        Espresso.closeSoftKeyboard();
+
         ViewInteraction button = onView(
                 allOf(withId(R.id.btn_Completed), withText("Progress"),
                         childAtPosition(
@@ -68,7 +72,7 @@ public class ProgressCorrectGuessTest {
         pressBack();
 
         ViewInteraction button2 = onView(
-                allOf(withId(R.id.btn_Play), withText("Play"),
+                allOf(withId(R.id.btn_Play),
                         childAtPosition(
                                 allOf(withId(R.id.constraint_layout),
                                         childAtPosition(
@@ -87,9 +91,18 @@ public class ProgressCorrectGuessTest {
             e.printStackTrace();
         }
 
-        // TODO: SOMEHOW FIX THIS FOR WHEN A GAME'S ALREADY IN PROGRESS
+
+        Song chosenSong;
         // Get chosen song for map
-        Song chosenSong = mActivityTestRule.getActivity().getGameCreator().getChosenSong();
+        if(mActivityTestRule.getActivity().getGameCreator() != null)
+        {
+            chosenSong = mActivityTestRule.getActivity().getGameCreator().getChosenSong();
+        }
+        else
+        {
+            UserPrefsManager u = new UserPrefsManager(mActivityTestRule.getActivity().getApplicationContext());
+            chosenSong = u.retrieveObject("song", Song.class);
+        }
 
         ViewInteraction button3 = onView(
                 allOf(withId(R.id.btn_guess), withText("Guess"),
@@ -128,6 +141,9 @@ public class ProgressCorrectGuessTest {
                                         0),
                                 3)));
         appCompatButton2.perform(scrollTo(), click());
+
+
+        Espresso.closeSoftKeyboard();
 
         ViewInteraction button4 = onView(
                 allOf(withId(R.id.btn_Completed), withText("Progress"),

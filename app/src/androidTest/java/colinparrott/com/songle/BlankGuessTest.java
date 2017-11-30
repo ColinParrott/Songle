@@ -45,7 +45,7 @@ public class BlankGuessTest
     public void blankGuessTest()
     {
         ViewInteraction button = onView(
-                allOf(ViewMatchers.withId(R.id.btn_Play), withText("Play"),
+                allOf(ViewMatchers.withId(R.id.btn_Play),
                         childAtPosition(
                                 allOf(withId(R.id.constraint_layout),
                                         childAtPosition(
