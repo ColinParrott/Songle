@@ -1,6 +1,7 @@
 package colinparrott.com.songle.game;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -562,37 +563,94 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-    // Override back button press to make sure user wants to quit game
+    // Override back button to ask user if they want to save and quit, wipe progress and quit or resume
     @Override
     public void onBackPressed()
     {
-        //TODO: CREATE CUSTOM POP-UP FOR THIS
         Log.d(TAG, "Back pressed");
-        Log.d(TAG, String.valueOf(prefsManager.isGameInProgress()));
 
-        // If yes go back by calling super's method if not, close window and do nothing
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
-        builder.setTitle("Do you want to quit?");
-        builder.setMessage("Choose carefully!");
-        builder.setPositiveButton("Quit and save", new DialogInterface.OnClickListener()
+        LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
+        final View prompt = layoutInflater.inflate(R.layout.dialog_quit_map, null);
+        AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
+        promptBuilder.setView(prompt);
+
+        final Button saveButton = (Button) prompt.findViewById(R.id.btnSave);
+        final Button resetButton = (Button) prompt.findViewById(R.id.btnReset);
+        final Button resumeButton = (Button) prompt.findViewById(R.id.btnResume);
+
+        final AlertDialog alertDialog = promptBuilder.create();
+        final Activity mapsActivity = this;
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener()
+        {
+            // Quit (leaving in-progress boolean unchanged (true) so that we resume this instance next time)
+            @Override
+            public void onShow(final DialogInterface dialog)
+            {
+                saveButton.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
-                    public void onClick(DialogInterface dialog, int which)
+                    public void onClick(View v)
                     {
-                       MapsActivity.super.onBackPressed();
-                    }
-                });
-        builder.setNeutralButton("Resume", null);
-
-                builder.setNegativeButton("Quit and lose progress", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        UserPrefsManager u = new UserPrefsManager(MapsActivity.super.getApplicationContext());
-                        u.setGameInProgress(false);
+                        alertDialog.dismiss();
                         MapsActivity.super.onBackPressed();
                     }
                 });
+
+                // Display reset confirmation dialog
+                resetButton.setOnClickListener(new View.OnClickListener()
+                {
+
+                    @Override
+                    public void onClick(View v)
+                    {
+                        displayResetConfirmationDialog(alertDialog);
+                    }
+                });
+
+                // Close dialog
+                resumeButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        alertDialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        alertDialog.show();
+
+    }
+
+    /**
+     * Dialog that pop ups to make sure the user actually wants to reset their progress
+     * @param parentDialog Pass parent dialog so we can close it
+     */
+    private void displayResetConfirmationDialog(final AlertDialog parentDialog)
+    {
+        // Create alert dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        builder.setTitle(getString(R.string.txt_ResetTitle));
+        builder.setMessage(getString(R.string.txt_ResetWarning));
+
+        // Add listener to positive button ("yes" to reset)
+        builder.setPositiveButton(getString(R.string.txt_YesReset), new DialogInterface.OnClickListener()
+        {
+           // Set in-progress boolean to false to stop us from trying to load a saved game from storage next time
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                UserPrefsManager u = new UserPrefsManager(MapsActivity.super.getApplicationContext());
+                u.setGameInProgress(false);
+                parentDialog.dismiss();
+                MapsActivity.super.onBackPressed();
+            }
+        });
+
+        // No button simply closes the dialog
+        builder.setNegativeButton(getString(R.string.txt_NoReset), null);
+
         builder.show();
     }
 

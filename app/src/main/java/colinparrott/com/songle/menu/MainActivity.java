@@ -92,6 +92,7 @@ public class MainActivity extends Activity
         // Get play button
         Button playButton = (Button) findViewById(R.id.btn_Play);
 
+
         // Start a game instance on play button click
         playButton.setOnClickListener(new View.OnClickListener()
         {
@@ -99,7 +100,7 @@ public class MainActivity extends Activity
             public void onClick(View view)
             {
                 Log.d(TAG, "Play button clicked");
-
+                progressBar.setVisibility(View.VISIBLE);
                 // Create a new game or resume a previous game instance based on boolean in storage`
                 if(!gameInProgress())
                 {
@@ -202,12 +203,23 @@ public class MainActivity extends Activity
                 break;
         }
     }
-
     @Override
     protected void onResume()
     {
-       // gameInProgress();
+        // Hide progress whenever we resume to this activity (i.e. after coming back from a map)
         progressBar.setVisibility(View.INVISIBLE);
+
+        // Change button text depending on if the user can resume a previous game or not
+        Button playButton = (Button) findViewById(R.id.btn_Play);
+        if(gameInProgress())
+        {
+            playButton.setText(getString(R.string.btntxt_Resume));
+        }
+        else
+        {
+            playButton.setText(getString(R.string.btntxt_Play));
+        }
+
         super.onResume();
     }
 

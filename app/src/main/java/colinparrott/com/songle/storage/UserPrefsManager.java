@@ -157,7 +157,6 @@ public class UserPrefsManager
      */
     public void saveObject(String key, Object obj, Type t)
     {
-      //  Log.d(TAG, "Saving: " + key);
         Gson gson = new Gson();
         String json = gson.toJson(obj, t);
 
@@ -181,7 +180,6 @@ public class UserPrefsManager
         if(sharedPrefs.contains(key))
         {
             String json = sharedPrefs.getString(key, null);
-            System.out.println(json);
             return gson.fromJson(json, t);
         }
         else
@@ -197,7 +195,6 @@ public class UserPrefsManager
      */
     public boolean isGameInProgress()
     {
-        Log.d(TAG, "Contains in_progress key: " + sharedPrefs.contains(GAME_IN_PROGRESS_KEY));
         return sharedPrefs.getBoolean(GAME_IN_PROGRESS_KEY, false);
     }
 }

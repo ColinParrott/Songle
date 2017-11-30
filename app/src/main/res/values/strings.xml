@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Songle</string>
     <string name="app_name_caps" translatable="false">SONGLE</string>
-    <string name="btntxt_Play">Play</string>
+    <string name="btntxt_Play">New game</string>
+    <string name="btntxt_Resume">Resume</string>
     <string name="btntxt_Completed">Progress</string>
     <string name="title_activity_maps">Map</string>
     <string name="txt_Permissions">Enable location permissions to play</string>
@@ -41,7 +42,6 @@
     <string name="txt_VeryHardDesc">25% of words. No usefulness of words shown.</string>
 
 
-
     <string name="txt_Correct">Correct!</string>
     <string name="txt_Incorrect">Incorrect!</string>
 
@@ -64,6 +64,17 @@
     <string name="txt_TitlePlaceholder" translatable="false">Bohemian Rhapsody</string>
     <string name="txt_ArtistPlaceholder" translatable="false">Queen</string>
     <string name="txt_URLPlaceholder" translatable="false"><a href="https://youtu.be/fJ9rUzIMcZQ">https://youtu.be/fJ9rUzIMcZQ</a></string>
+
+    <string name="txt_QuitTitle">Are you sure you want to quit?</string>
+    <string name="txt_Save">Save and quit</string>
+    <string name="txt_Quit">Reset and quit</string>
+    <string name="txt_Resume">Resume</string>
+
+    <string name="txt_ResetTitle">Are you sure?</string>
+    <string name="txt_ResetWarning">All current progress will be lost!</string>
+    <string name="txt_YesReset">Yes</string>
+    <string name="txt_NoReset">No</string>
+
 
     <string name="txt_SongList">SONG LIST</string>
     <string name="txt_SortByCompleted">Sort by completed</string>
