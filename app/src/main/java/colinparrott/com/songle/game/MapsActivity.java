@@ -151,6 +151,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String SONG_KEY = "song";
     private static final String FOUND_WORDS_KEY = "found_words";
     private static final String MARKER_INFOS_KEY = "marker_infos";
+    private static final String DIFFICULTY_KEY = "difficulty";
 
     /**
      * To be used with GSON library when storing/retrieving serialised lists for markerInfos and foundWords
@@ -286,6 +287,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             prefsManager.saveObject(MARKER_INFOS_KEY, songleMap.getMarkerInfos(), gsonListType);
             prefsManager.saveObject(SONG_KEY, song,  Song.class);
             prefsManager.saveObject(FOUND_WORDS_KEY, songleMap.getFoundWords(), gsonListType);
+            prefsManager.saveObject(DIFFICULTY_KEY, songleMap.getDifficulty(), Difficulty.class);
         }
     }
 
@@ -785,7 +787,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             SongleKmlParser parser = new SongleKmlParser();
             ArrayList<SongleMarkerInfo> markerInfos = parser.parse(mMap, this, song.getNumber(), diff.ordinal() + 1);
-            songleMap = new SongleMap(song, markerInfos, mMap, this);
+            songleMap = new SongleMap(song, markerInfos, mMap, diff, this);
         }
         // Retrieve stored game data if we're resuming a previous game instance
         else
@@ -793,7 +795,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ArrayList<SongleMarkerInfo> markerInfos = prefsManager.retrieveObject(MARKER_INFOS_KEY, gsonListType);
             ArrayList<SongleMarkerInfo> foundWords = prefsManager.retrieveObject(FOUND_WORDS_KEY, gsonListType);
             song = prefsManager.retrieveObject(SONG_KEY, Song.class);
-            songleMap = new SongleMap(song, markerInfos, mMap, this, foundWords);
+            Difficulty d = prefsManager.retrieveObject(DIFFICULTY_KEY, Difficulty.class);
+            songleMap = new SongleMap(song, markerInfos, mMap, d, this, foundWords);
             Log.d(TAG, "Restoring SongleMap with song: " + song.getNumber() + "\t" + song.getTitle());
         }
 

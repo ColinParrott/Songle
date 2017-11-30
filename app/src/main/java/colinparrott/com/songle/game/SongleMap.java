@@ -23,6 +23,7 @@ import colinparrott.com.songle.R;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.game.obj.SongleMarkerInfo;
 import colinparrott.com.songle.game.obj.WordImportance;
+import colinparrott.com.songle.menu.Difficulty;
 import colinparrott.com.songle.storage.UserPrefsManager;
 
 
@@ -63,6 +64,11 @@ public class SongleMap
     private Marker indicator;
 
     /**
+     * Difficulty of this map
+     */
+    private Difficulty difficulty;
+
+    /**
      * How close the user has to be to a marker in order to consider that word collected
      */
     private static final double CAPTURE_DISTANCE = 15;
@@ -82,20 +88,37 @@ public class SongleMap
      */
     private final String TAG = "SongleMap";
 
-    public SongleMap(Song song, ArrayList<SongleMarkerInfo> wordMarkers, GoogleMap map, MapsActivity mapActivity)
-    {
-        this.song = song;
-        this.markerInfos = wordMarkers;
-        this.map = map;
-        this.mapActivity = mapActivity;
-    }
 
-    public SongleMap(Song song, ArrayList<SongleMarkerInfo> markerInfos, GoogleMap map, MapsActivity mapsActivity, ArrayList<SongleMarkerInfo> foundWords)
+    /**
+     * Constructor when creating a new game
+     * @param song Song to start new instance on
+     * @param markerInfos SongleMarkerInfos to attach to markers on the map
+     * @param map Map object to modify
+     * @param mapActivity MapActivity that created this SongleMap instance
+     */
+    public SongleMap(Song song, ArrayList<SongleMarkerInfo> markerInfos, GoogleMap map, Difficulty difficulty, MapsActivity mapActivity)
     {
         this.song = song;
         this.markerInfos = markerInfos;
         this.map = map;
-        this.mapActivity = mapsActivity;
+        this.difficulty = difficulty;
+        this.mapActivity = mapActivity;
+    }
+
+    /**
+     * Constructor when resuming a previous game instance
+     * @param song Song from a previous instance to resume with
+     * @param markerInfos SongleMarkerInfos from a previous game instance
+     * @param map Map object to modify
+     * @param mapActivity MapActivity that created this SongleMap instance
+     */
+    public SongleMap(Song song, ArrayList<SongleMarkerInfo> markerInfos, GoogleMap map, Difficulty difficulty, MapsActivity mapActivity, ArrayList<SongleMarkerInfo> foundWords)
+    {
+        this.song = song;
+        this.markerInfos = markerInfos;
+        this.map = map;
+        this.difficulty = difficulty;
+        this.mapActivity = mapActivity;
         this.foundWords = foundWords;
     }
 
@@ -106,7 +129,14 @@ public class SongleMap
     public void Initialise()
     {
         markers = new ArrayList<>();
-        foundWords = new ArrayList<>();
+
+        // Initialise foundWords list if we're creating a new game (it was null as the resume constructor was not used)
+        if(foundWords == null)
+        {
+            foundWords = new ArrayList<>();
+        }
+
+
         prefsManager = new UserPrefsManager(mapActivity.getApplicationContext());
 
         for(SongleMarkerInfo info : markerInfos)
@@ -122,7 +152,7 @@ public class SongleMap
             markers.add(m);
         }
 
-        mapActivity.updateRemainingText(markers.size());
+        mapActivity.updateRemainingText(markers.size() - foundWords.size());
 
     }
 
@@ -304,6 +334,14 @@ public class SongleMap
                 .replace(" ", "") // Remove all spaces
                 .toLowerCase() // Make lowercase
                 .trim(); // Trim should be unneeded but no harm
+    }
+
+    /**
+     * Get difficulty of this map
+     * @return The difficulty
+     */
+    public Difficulty getDifficulty() {
+        return difficulty;
     }
 
     @VisibleForTesting

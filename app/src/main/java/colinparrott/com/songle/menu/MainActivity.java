@@ -3,6 +3,7 @@ package colinparrott.com.songle.menu;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -18,6 +19,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -69,6 +71,11 @@ public class MainActivity extends Activity
     private SeekBar diffBar;
 
     /**
+     * Button to clear saved progress
+     */
+    private Button clearButton;
+
+    /**
      * Code for accessing location permission
      */
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -91,6 +98,7 @@ public class MainActivity extends Activity
 
         // Get play button
         Button playButton = (Button) findViewById(R.id.btn_Play);
+        clearButton = (Button) findViewById(R.id.btn_ClearSave);
 
 
         // Start a game instance on play button click
@@ -112,6 +120,35 @@ public class MainActivity extends Activity
                 }
             }
         });
+
+
+        // Create reset progress confirmation dialog
+        final Context context = this.getApplicationContext();
+        clearButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                final Context context = MainActivity.super.getApplicationContext();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), R.style.AlertDialogTheme);
+                builder.setTitle("Are you sure?");
+                builder.setMessage("Saved progress will be lost.");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        new UserPrefsManager(context).setGameInProgress(false);
+                        onResume();
+                    }
+                });
+
+                builder.setNegativeButton("No", null);
+                builder.show();
+            }
+        });
+
 
 
         // Set up progress button for loading CompletedActivity
@@ -143,6 +180,7 @@ public class MainActivity extends Activity
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {
+                Log.d(TAG, "Difficulty bar changed to: " + getDifficulty(seekBar.getProgress()));
                 updateDifficultyText(getDifficulty(seekBar.getProgress()));
             }
 
@@ -203,6 +241,7 @@ public class MainActivity extends Activity
                 break;
         }
     }
+
     @Override
     protected void onResume()
     {
@@ -211,13 +250,38 @@ public class MainActivity extends Activity
 
         // Change button text depending on if the user can resume a previous game or not
         Button playButton = (Button) findViewById(R.id.btn_Play);
+        diffBar = (SeekBar) findViewById(R.id.diffSeek);
+        TextView diffMsg = (TextView) findViewById(R.id.textView5);
+        TextView desc = (TextView) findViewById(R.id.txt_DifficultyDesc);
+
+        // Update UI depending on if there's a game instance that can be resumed or not
         if(gameInProgress())
         {
             playButton.setText(getString(R.string.btntxt_Resume));
+
+            // Hide difficulty slider & description, show clear button
+            diffBar.setVisibility(View.INVISIBLE);
+            desc.setVisibility(View.INVISIBLE);
+            clearButton.setVisibility(View.VISIBLE);
+
+            final Difficulty d = new UserPrefsManager(this).retrieveObject("difficulty", Difficulty.class);
+            updateDifficultyText(d);
+
+            diffMsg.setText(getString(R.string.txt_ResumeDifficulty));
+
+
         }
         else
         {
             playButton.setText(getString(R.string.btntxt_Play));
+
+            // Hide clear button, show difficulty slider and description
+            clearButton.setVisibility(View.INVISIBLE);
+            diffBar.setVisibility(View.VISIBLE);
+            desc.setVisibility(View.VISIBLE);
+
+            diffMsg.setText(getString(R.string.txt_ChooseDifficulty));
+            updateDifficultyText(getDifficulty(diffBar.getProgress()));
         }
 
         super.onResume();

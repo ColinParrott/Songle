@@ -29,6 +29,8 @@
     <string name="txt_GuessSubmitBtn">Submit</string>
 
     <string name="txt_ChooseDifficulty">Select Difficulty</string>
+    <string name="txt_ResumeDifficulty">Saved Game Difficulty</string>
+    <string name="btntxt_ClearSave">Clear Save</string>
     <string name="txt_VeryEasy">VERY EASY</string>
     <string name="txt_Easy">EASY</string>
     <string name="txt_Moderate">MODERATE</string>
