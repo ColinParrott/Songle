@@ -79,20 +79,6 @@ public class MainActivity extends Activity
     private GameCreator gameCreator;
 
 
-    private boolean gameInProgress()
-    {
-        UserPrefsManager u = new UserPrefsManager(this);
-        Log.d(TAG, "IN PROGRESS: " + u.isGameInProgress());
-        return u.isGameInProgress();
-    }
-
-    private void resumeGame()
-    {
-        Intent i = new Intent(this, MapsActivity.class);
-        i.putExtra("resume_game", true);
-        startActivity(i);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -106,7 +92,7 @@ public class MainActivity extends Activity
         // Get play button
         Button playButton = (Button) findViewById(R.id.btn_Play);
 
-        // Begin new game setup on play button click
+        // Start a game instance on play button click
         playButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -114,6 +100,7 @@ public class MainActivity extends Activity
             {
                 Log.d(TAG, "Play button clicked");
 
+                // Create a new game or resume a previous game instance based on boolean in storage`
                 if(!gameInProgress())
                 {
                     setupGame();
@@ -434,6 +421,7 @@ public class MainActivity extends Activity
     }
 
 
+
     /**
      * Checks if we location permission
      *
@@ -456,6 +444,28 @@ public class MainActivity extends Activity
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+
+    /**
+     * Check if we're supposed to resume a game via the boolean in storage
+     * @return True if should resume; false otherwise
+     */
+    private boolean gameInProgress()
+    {
+        UserPrefsManager u = new UserPrefsManager(this);
+        Log.d(TAG, "IN PROGRESS: " + u.isGameInProgress());
+        return u.isGameInProgress();
+    }
+
+    /**
+     * Launches MapsActivity with intent telling it to resume a previous game instance
+     */
+    private void resumeGame()
+    {
+        Intent i = new Intent(this, MapsActivity.class);
+        i.putExtra("resume_game", true);
+        startActivity(i);
     }
 
     @VisibleForTesting

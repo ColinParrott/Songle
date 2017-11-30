@@ -139,8 +139,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private boolean resumedGame;
 
+    /**
+     * Object for accessing stored data
+     */
     private UserPrefsManager prefsManager;
 
+    /**
+     * Keys used to access data in persistent storage if we're resuming a game
+     */
+    private static final String SONG_KEY = "song";
+    private static final String FOUND_WORDS_KEY = "found_words";
+    private static final String MARKER_INFOS_KEY = "marker_infos";
+
+    /**
+     * To be used with GSON library when storing/retrieving serialised lists for markerInfos and foundWords
+     */
+    private static Type gsonListType = new TypeToken<List<SongleMarkerInfo>>(){}.getType();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -152,22 +166,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Lock to portrait
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-
-        prefsManager = new UserPrefsManager(this);
-        ////////////////////////////-------
-        // Get song object passed from GameCreator
+        // Get intent telling us if this activity should load a previously played instance
         Intent intent = getIntent();
         resumedGame = intent.getBooleanExtra("resume_game", false);
 
+        // Get song from GameCreator if it's a fresh game
         if(!resumedGame)
         {
+            // Get song object passed from GameCreator
             song = (Song) intent.getSerializableExtra(GameCreator.SONG_MSG);
         }
 
-
+        // Change boolean in storage that tracks if a game is in-progress
+        prefsManager = new UserPrefsManager(this);
         prefsManager.setGameInProgress(true);
 
-        ///////////////////////////////---------------------
         guessButton = findViewById(R.id.btn_guess);
         guessButton.setOnClickListener(new View.OnClickListener()
         {
@@ -256,20 +269,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
         super.onPause();
         Log.d(TAG, "onPause()");
+
+        // Save current game state
         saveGameState();
     }
 
+    /**
+     * Save the necessary information for reloading this map instance in storage
+     */
     private void saveGameState()
     {
-        Type listType = new TypeToken<List<SongleMarkerInfo>>(){}.getType();
-        // MarkerInfos: marker_infos
-        // Song: song
-        // foundWords: found_words
-        if(songleMap != null) {
+        if(songleMap != null)
+        {
             UserPrefsManager prefsManager = new UserPrefsManager(this);
-            prefsManager.saveObject("marker_infos", songleMap.getMarkerInfos(), listType);
-            prefsManager.saveObject("song", song,  Song.class);
-            prefsManager.saveObject("found_words", songleMap.getFoundWords(), listType);
+            prefsManager.saveObject(MARKER_INFOS_KEY, songleMap.getMarkerInfos(), gsonListType);
+            prefsManager.saveObject(SONG_KEY, song,  Song.class);
+            prefsManager.saveObject(FOUND_WORDS_KEY, songleMap.getFoundWords(), gsonListType);
         }
     }
 
@@ -280,6 +295,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void onCorrectGuess()
     {
 
+        // Change in-progress boolean in storage to prevent us from trying to reload this map instance after it has been completed
         prefsManager.setGameInProgress(false);
 
         // Create and display prompt
@@ -550,14 +566,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onBackPressed()
     {
+        //TODO: CREATE CUSTOM POP-UP FOR THIS
         Log.d(TAG, "Back pressed");
         Log.d(TAG, String.valueOf(prefsManager.isGameInProgress()));
 
         // If yes go back by calling super's method if not, close window and do nothing
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         builder.setTitle("Do you want to quit?");
-        builder.setMessage("All progress will be lost!");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+        builder.setMessage("Choose carefully!");
+        builder.setPositiveButton("Quit and save", new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which)
@@ -565,8 +582,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                        MapsActivity.super.onBackPressed();
                     }
                 });
+        builder.setNeutralButton("Resume", null);
 
-                builder.setNegativeButton("No", null);
+                builder.setNegativeButton("Quit and lose progress", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        UserPrefsManager u = new UserPrefsManager(MapsActivity.super.getApplicationContext());
+                        u.setGameInProgress(false);
+                        MapsActivity.super.onBackPressed();
+                    }
+                });
         builder.show();
     }
 
@@ -696,22 +722,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void loadGameMapData(Difficulty diff)
     {
+        // Download and parse KML map if we're creating a new game instance
         if(!resumedGame)
         {
             SongleKmlParser parser = new SongleKmlParser();
             ArrayList<SongleMarkerInfo> markerInfos = parser.parse(mMap, this, song.getNumber(), diff.ordinal() + 1);
             songleMap = new SongleMap(song, markerInfos, mMap, this);
         }
+        // Retrieve stored game data if we're resuming a previous game instance
         else
         {
-            Type listType = new TypeToken<List<SongleMarkerInfo>>(){}.getType();
-            // MarkerInfos: marker_infos
-            // Song: song
-            // foundWords: found_words
-            ArrayList<SongleMarkerInfo> markerInfos = prefsManager.retrieveObject("marker_infos", listType);
-            ArrayList<SongleMarkerInfo> foundWords = prefsManager.retrieveObject("found_words", listType);
-            song = prefsManager.retrieveObject("song", Song.class);
+            ArrayList<SongleMarkerInfo> markerInfos = prefsManager.retrieveObject(MARKER_INFOS_KEY, gsonListType);
+            ArrayList<SongleMarkerInfo> foundWords = prefsManager.retrieveObject(FOUND_WORDS_KEY, gsonListType);
+            song = prefsManager.retrieveObject(SONG_KEY, Song.class);
             songleMap = new SongleMap(song, markerInfos, mMap, this, foundWords);
+            Log.d(TAG, "Restoring SongleMap with song: " + song.getNumber() + "\t" + song.getTitle());
         }
 
 

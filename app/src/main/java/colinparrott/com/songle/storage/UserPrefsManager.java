@@ -146,10 +146,15 @@ public class UserPrefsManager
         Log.d(TAG, "SET GAME IN PROGRESS: " + inProgress);
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putBoolean(GAME_IN_PROGRESS_KEY, inProgress);
-      //  editor.clear();
         editor.commit();
     }
 
+    /**
+     * Save an object in storage as a string through serialization (GSON library)
+     * @param key Key to store object in
+     * @param obj The actual object to store
+     * @param t The type of the object
+     */
     public void saveObject(String key, Object obj, Type t)
     {
       //  Log.d(TAG, "Saving: " + key);
@@ -158,11 +163,17 @@ public class UserPrefsManager
 
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString(key, json);
-      //  editor.clear();
         editor.commit();
         Log.d(TAG, "Successfully saved: " + key);
     }
 
+    /**
+     * Retrieve an object from storage via deserialization
+     * @param key Key of object to retrieve
+     * @param t Type to return object in
+     * @param <T> Type to return object in
+     * @return Object from storage
+     */
     public <T> T retrieveObject(String key, Type t)
     {
         Gson gson = new Gson();
