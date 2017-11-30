@@ -90,6 +90,15 @@ public class SongleMap
         this.mapActivity = mapActivity;
     }
 
+    public SongleMap(Song song, ArrayList<SongleMarkerInfo> markerInfos, GoogleMap map, MapsActivity mapsActivity, ArrayList<SongleMarkerInfo> foundWords)
+    {
+        this.song = song;
+        this.markerInfos = markerInfos;
+        this.map = map;
+        this.mapActivity = mapsActivity;
+        this.foundWords = foundWords;
+    }
+
     /**
      * Initialise lists and use supplied SongleMarkerInfos to create markers
      * and place them on the map
@@ -302,5 +311,16 @@ public class SongleMap
     {
         return markers;
     }
+
+    @VisibleForTesting
+    public Song getSong()
+    {
+        return song;
+    }
+
+    public ArrayList<SongleMarkerInfo> getMarkerInfos() {
+        return markerInfos;
+    }
+
 
 }

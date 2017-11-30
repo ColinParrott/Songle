@@ -87,6 +87,7 @@ public class ProgressCorrectGuessTest {
             e.printStackTrace();
         }
 
+        // TODO: SOMEHOW FIX THIS FOR WHEN A GAME'S ALREADY IN PROGRESS
         // Get chosen song for map
         Song chosenSong = mActivityTestRule.getActivity().getGameCreator().getChosenSong();
 

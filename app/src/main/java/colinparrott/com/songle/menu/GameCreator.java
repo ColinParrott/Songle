@@ -145,6 +145,8 @@ public class GameCreator
         Intent intent = new Intent(mainContext, MapsActivity.class);
         intent.putExtra(SONG_MSG, song);
         intent.putExtra(DIFFICULTY_MSG, difficulty);
+        // TODO: MAKE VARIABLE FOR KEY BELOW
+        intent.putExtra("resume_game", false);
         mainContext.startActivity(intent);
     }
 

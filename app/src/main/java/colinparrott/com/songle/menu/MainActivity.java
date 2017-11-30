@@ -34,8 +34,10 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import colinparrott.com.songle.R;
+import colinparrott.com.songle.game.MapsActivity;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.progress.ProgressActivity;
+import colinparrott.com.songle.storage.UserPrefsManager;
 
 public class MainActivity extends Activity
 {
@@ -45,15 +47,6 @@ public class MainActivity extends Activity
      */
     private ProgressBar progressBar;
 
-    /**
-     * TextView to click when permission requests have been disabled by user
-     */
-    private TextView permissionsLink;
-
-    /**
-     * If user has hit play yet
-     */
-    private boolean triedToPlay = false;
 
     /**
      * Tag for debugging
@@ -86,6 +79,20 @@ public class MainActivity extends Activity
     private GameCreator gameCreator;
 
 
+    private boolean gameInProgress()
+    {
+        UserPrefsManager u = new UserPrefsManager(this);
+        Log.d(TAG, "IN PROGRESS: " + u.isGameInProgress());
+        return u.isGameInProgress();
+    }
+
+    private void resumeGame()
+    {
+        Intent i = new Intent(this, MapsActivity.class);
+        i.putExtra("resume_game", true);
+        startActivity(i);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -105,10 +112,16 @@ public class MainActivity extends Activity
             @Override
             public void onClick(View view)
             {
-                triedToPlay = true;
                 Log.d(TAG, "Play button clicked");
 
-                setupGame();
+                if(!gameInProgress())
+                {
+                    setupGame();
+                }
+                else
+                {
+                    resumeGame();
+                }
             }
         });
 
@@ -206,7 +219,7 @@ public class MainActivity extends Activity
     @Override
     protected void onResume()
     {
-        Log.d(TAG, "ON RESUME");
+       // gameInProgress();
         progressBar.setVisibility(View.INVISIBLE);
         super.onResume();
     }

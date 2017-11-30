@@ -2,7 +2,11 @@ package colinparrott.com.songle.storage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
+import com.google.gson.Gson;
+
+import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,14 +35,26 @@ public class UserPrefsManager
     private static final String COMPLETED_SONGS_KEY = "completed_songs";
 
     /**
+     * Key used for checking in-progress state
+     */
+    private static final String GAME_IN_PROGRESS_KEY = "in_progress";
+
+
+    /**
      * The key used for storing all data
      */
-    private static final String  USER_DETAILS_KEY = "userDetails";
+    private static final String USER_DETAILS_KEY = "userDetails";
+
+    /**
+     * Debugging tag
+     */
+    private static final String TAG = "UserPrefsManager";
 
     public UserPrefsManager(Context context)
     {
-        this.sharedPrefs = context.getSharedPreferences(USER_DETAILS_KEY, Context.MODE_PRIVATE);
         this.context = context;
+        this.sharedPrefs = context.getSharedPreferences(USER_DETAILS_KEY, Context.MODE_PRIVATE);
+
     }
 
     /**
@@ -119,5 +135,58 @@ public class UserPrefsManager
     public Set<String> getCompletedNumbersString()
     {
         return sharedPrefs.getStringSet(COMPLETED_SONGS_KEY, null);
+    }
+
+    /**
+     * Sets the last game in-progress value
+     * @param inProgress is a game in-progress
+     */
+    public void setGameInProgress(boolean inProgress)
+    {
+        Log.d(TAG, "SET GAME IN PROGRESS: " + inProgress);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putBoolean(GAME_IN_PROGRESS_KEY, inProgress);
+      //  editor.clear();
+        editor.commit();
+    }
+
+    public void saveObject(String key, Object obj, Type t)
+    {
+      //  Log.d(TAG, "Saving: " + key);
+        Gson gson = new Gson();
+        String json = gson.toJson(obj, t);
+
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(key, json);
+      //  editor.clear();
+        editor.commit();
+        Log.d(TAG, "Successfully saved: " + key);
+    }
+
+    public <T> T retrieveObject(String key, Type t)
+    {
+        Gson gson = new Gson();
+
+        if(sharedPrefs.contains(key))
+        {
+            String json = sharedPrefs.getString(key, null);
+            System.out.println(json);
+            return gson.fromJson(json, t);
+        }
+        else
+        {
+            Log.e(TAG, key + " NOT CONTAINED IN SHARED PREFS");
+            return null;
+        }
+    }
+
+    /**
+     * Gets the last game in-progress value
+     * @return True if game was in-progress; false otherwise
+     */
+    public boolean isGameInProgress()
+    {
+        Log.d(TAG, "Contains in_progress key: " + sharedPrefs.contains(GAME_IN_PROGRESS_KEY));
+        return sharedPrefs.getBoolean(GAME_IN_PROGRESS_KEY, false);
     }
 }
