@@ -16,6 +16,23 @@
     <string name="txt_Ok">OK</string>
 
 
+    <string name="txt_SaveInfo">Game information</string>
+
+    <string name="txt_FoundWordsLabel" translatable="false">Found words:</string>
+    <string name="txt_WordsRemainingLabel" translatable="false">Words left:</string>
+    <string name="txt_LastSaveTimeLabel">Last played:</string>
+    <string name="txt_PlayTimeLabel" translatable="false">Play time:</string>
+    <string name="txt_DifficultyLabel" translatable="false">Difficulty:</string>
+
+    <string name="txt_FoundWordsPlaceholder" translatable="false">11</string>
+    <string name="txt_WordsRemainingPlaceholder" translatable="false">67</string>
+    <string name="txt_LastSaveTimePlaceholder">10/11/17 15:20:14</string>
+    <string name="txt_PlayTimePlaceholder" translatable="false">01h 50m 20s</string>
+    <string name="txt_DifficultyPlaceholder" translatable="false">VERY EASY</string>
+
+    <string name="txt_Close">Close</string>
+
+
     <string name="desc_unclassified">Unclassified</string>
     <string name="desc_boring">Boring</string>
     <string name="desc_notboring">Not boring</string>
@@ -31,6 +48,7 @@
     <string name="txt_ChooseDifficulty">Select Difficulty</string>
     <string name="txt_ResumeDifficulty">Saved Game Difficulty</string>
     <string name="btntxt_ClearSave">Clear Save</string>
+    <string name="btntxt_ViewInfo">Save Info</string>
     <string name="txt_VeryEasy">VERY EASY</string>
     <string name="txt_Easy">EASY</string>
     <string name="txt_Moderate">MODERATE</string>

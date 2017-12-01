@@ -21,6 +21,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -37,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 
 import colinparrott.com.songle.R;
 import colinparrott.com.songle.game.MapsActivity;
+import colinparrott.com.songle.game.obj.GameSaveInformation;
 import colinparrott.com.songle.game.obj.GameStateKey;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.progress.ProgressActivity;
@@ -77,6 +79,11 @@ public class MainActivity extends Activity
     private Button clearButton;
 
     /**
+     * Button to view save info
+     */
+    private Button saveInfoButton;
+
+    /**
      * Code for accessing location permission
      */
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -100,6 +107,7 @@ public class MainActivity extends Activity
         // Get play button
         Button playButton = (Button) findViewById(R.id.btn_Play);
         clearButton = (Button) findViewById(R.id.btn_ClearSave);
+        saveInfoButton = (Button) findViewById(R.id.btn_ViewInfo);
 
 
         // Start a game instance on play button click
@@ -140,13 +148,24 @@ public class MainActivity extends Activity
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        new UserPrefsManager(context).setGameInProgress(false);
+                        UserPrefsManager userPrefsManager =  new UserPrefsManager(context);
+                        userPrefsManager.setGameInProgress(false);
+                        userPrefsManager.saveObject(GameStateKey.TIME_PLAYED.name(), 0L, long.class);
                         onResume();
                     }
                 });
 
                 builder.setNegativeButton("No", null);
                 builder.show();
+            }
+        });
+
+        saveInfoButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                displaySaveInfo();
             }
         });
 
@@ -197,6 +216,35 @@ public class MainActivity extends Activity
 
         });
 
+    }
+
+    private void displaySaveInfo()
+    {
+        // Create and display prompt
+        LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+        final View prompt = layoutInflater.inflate(R.layout.dialog_save_info, null);
+        final AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogTheme);
+        promptBuilder.setView(prompt);
+
+        promptBuilder.setCancelable(false)
+                .setPositiveButton("Close", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.dismiss();
+                    }
+                });
+        promptBuilder.create().show();
+
+        GameSaveInformation info = new GameSaveInformation(this);
+        info.initialise();
+
+        // Set save information on prompt
+        ((TextView) prompt.findViewById(R.id.textViewFoundWords)).setText(String.valueOf(info.getNumFoundWords()));
+        ((TextView) prompt.findViewById(R.id.textViewWordsLeft)).setText(String.valueOf(info.getNumWordsRemaining()));
+        ((TextView) prompt.findViewById(R.id.textViewPlayTime)).setText(info.getPlayTimeFormatted());
+        ((TextView) prompt.findViewById(R.id.textViewSaveTime)).setText(info.getSaveTimeFormatted());
     }
 
     /**
@@ -264,6 +312,7 @@ public class MainActivity extends Activity
             diffBar.setVisibility(View.INVISIBLE);
             desc.setVisibility(View.INVISIBLE);
             clearButton.setVisibility(View.VISIBLE);
+            saveInfoButton.setVisibility(View.VISIBLE);
 
             final Difficulty d = new UserPrefsManager(this).retrieveObject(GameStateKey.DIFFICULTY.name(), Difficulty.class);
             updateDifficultyText(d);
@@ -278,6 +327,7 @@ public class MainActivity extends Activity
 
             // Hide clear button, show difficulty slider and description
             clearButton.setVisibility(View.INVISIBLE);
+            saveInfoButton.setVisibility(View.INVISIBLE);
             diffBar.setVisibility(View.VISIBLE);
             desc.setVisibility(View.VISIBLE);
 

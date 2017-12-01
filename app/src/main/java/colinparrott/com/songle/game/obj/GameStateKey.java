@@ -10,5 +10,6 @@ public enum GameStateKey
     FOUND_WORDS,
     MARKER_INFOS,
     DIFFICULTY,
-    TIME_PLAYED;
+    TIME_PLAYED,
+    TIME_OF_LAST_SAVE;
 }

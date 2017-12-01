@@ -142,6 +142,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean resumedGame;
 
     /**
+     * Epoch time in milliseconds when onResume() was last called
+     */
+    private long timeOfOnResume;
+
+    /**
+     * Used by onPause() so it doesn't store a new time_played value if user hit reset button (onPause() is called after user hits leave)
+     */
+    private boolean leavingGame;
+
+    /**
      * Object for accessing stored data
      */
     private UserPrefsManager prefsManager;
@@ -257,6 +267,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
         super.onResume();
         Log.d(TAG, "onResume()");
+
+
+        timeOfOnResume = System.currentTimeMillis();
     }
 
     @Override
@@ -281,6 +294,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             prefsManager.saveObject(GameStateKey.SONG.name(), song,  Song.class);
             prefsManager.saveObject(GameStateKey.FOUND_WORDS.name(), songleMap.getFoundWords(), gsonListType);
             prefsManager.saveObject(GameStateKey.DIFFICULTY.name(), songleMap.getDifficulty(), Difficulty.class);
+
+            if(!leavingGame)
+            {
+                Long timePlayed = prefsManager.retrieveObject(GameStateKey.TIME_PLAYED.name(), long.class);
+
+                if (timePlayed == null) {
+                    timePlayed = 0L;
+                }
+
+                long newTimePlayed = timePlayed + (System.currentTimeMillis() - timeOfOnResume);
+
+                prefsManager.saveObject(GameStateKey.TIME_PLAYED.name(), newTimePlayed, long.class);
+                prefsManager.saveObject(GameStateKey.TIME_OF_LAST_SAVE.name(), System.currentTimeMillis(), long.class);
+                Log.d(TAG, "Time played: " + newTimePlayed + "ms.");
+            }
         }
     }
 
@@ -636,8 +664,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
+                leavingGame = true;
                 UserPrefsManager u = new UserPrefsManager(MapsActivity.super.getApplicationContext());
                 u.setGameInProgress(false);
+                u.saveObject(GameStateKey.TIME_PLAYED.name(), 0L, long.class);
                 parentDialog.dismiss();
                 MapsActivity.super.onBackPressed();
             }

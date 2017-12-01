@@ -88,6 +88,11 @@ public class SongleMap
      */
     private final String TAG = "SongleMap";
 
+    /**
+     * Know whether we're playing a completely new game instance or one from a previous time
+     */
+    private boolean resumedGame;
+
 
     /**
      * Constructor when creating a new game
@@ -103,6 +108,7 @@ public class SongleMap
         this.map = map;
         this.difficulty = difficulty;
         this.mapActivity = mapActivity;
+        this.resumedGame = false;
     }
 
     /**
@@ -120,6 +126,7 @@ public class SongleMap
         this.difficulty = difficulty;
         this.mapActivity = mapActivity;
         this.foundWords = foundWords;
+        this.resumedGame = true;
     }
 
     /**
