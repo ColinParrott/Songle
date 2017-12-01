@@ -37,6 +37,7 @@ import java.util.concurrent.ExecutionException;
 
 import colinparrott.com.songle.R;
 import colinparrott.com.songle.game.MapsActivity;
+import colinparrott.com.songle.game.obj.GameStateKey;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.progress.ProgressActivity;
 import colinparrott.com.songle.storage.UserPrefsManager;
@@ -264,7 +265,7 @@ public class MainActivity extends Activity
             desc.setVisibility(View.INVISIBLE);
             clearButton.setVisibility(View.VISIBLE);
 
-            final Difficulty d = new UserPrefsManager(this).retrieveObject("difficulty", Difficulty.class);
+            final Difficulty d = new UserPrefsManager(this).retrieveObject(GameStateKey.DIFFICULTY.name(), Difficulty.class);
             updateDifficultyText(d);
 
             diffMsg.setText(getString(R.string.txt_ResumeDifficulty));

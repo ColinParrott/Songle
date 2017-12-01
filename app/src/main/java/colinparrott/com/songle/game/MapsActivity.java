@@ -50,6 +50,7 @@ import java.util.List;
 
 import colinparrott.com.songle.R;
 import colinparrott.com.songle.game.obj.FoundWordsArrayAdapter;
+import colinparrott.com.songle.game.obj.GameStateKey;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.game.obj.SongleMarkerInfo;
 import colinparrott.com.songle.game.parsers.SongleKmlParser;
@@ -144,14 +145,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Object for accessing stored data
      */
     private UserPrefsManager prefsManager;
-
-    /**
-     * Keys used to access data in persistent storage if we're resuming a game
-     */
-    private static final String SONG_KEY = "song";
-    private static final String FOUND_WORDS_KEY = "found_words";
-    private static final String MARKER_INFOS_KEY = "marker_infos";
-    private static final String DIFFICULTY_KEY = "difficulty";
 
     /**
      * To be used with GSON library when storing/retrieving serialised lists for markerInfos and foundWords
@@ -284,10 +277,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(songleMap != null)
         {
             UserPrefsManager prefsManager = new UserPrefsManager(this);
-            prefsManager.saveObject(MARKER_INFOS_KEY, songleMap.getMarkerInfos(), gsonListType);
-            prefsManager.saveObject(SONG_KEY, song,  Song.class);
-            prefsManager.saveObject(FOUND_WORDS_KEY, songleMap.getFoundWords(), gsonListType);
-            prefsManager.saveObject(DIFFICULTY_KEY, songleMap.getDifficulty(), Difficulty.class);
+            prefsManager.saveObject(GameStateKey.MARKER_INFOS.name(), songleMap.getMarkerInfos(), gsonListType);
+            prefsManager.saveObject(GameStateKey.SONG.name(), song,  Song.class);
+            prefsManager.saveObject(GameStateKey.FOUND_WORDS.name(), songleMap.getFoundWords(), gsonListType);
+            prefsManager.saveObject(GameStateKey.DIFFICULTY.name(), songleMap.getDifficulty(), Difficulty.class);
         }
     }
 
@@ -792,10 +785,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Retrieve stored game data if we're resuming a previous game instance
         else
         {
-            ArrayList<SongleMarkerInfo> markerInfos = prefsManager.retrieveObject(MARKER_INFOS_KEY, gsonListType);
-            ArrayList<SongleMarkerInfo> foundWords = prefsManager.retrieveObject(FOUND_WORDS_KEY, gsonListType);
-            song = prefsManager.retrieveObject(SONG_KEY, Song.class);
-            Difficulty d = prefsManager.retrieveObject(DIFFICULTY_KEY, Difficulty.class);
+            ArrayList<SongleMarkerInfo> markerInfos = prefsManager.retrieveObject(GameStateKey.MARKER_INFOS.name(), gsonListType);
+            ArrayList<SongleMarkerInfo> foundWords = prefsManager.retrieveObject(GameStateKey.FOUND_WORDS.name(), gsonListType);
+            song = prefsManager.retrieveObject(GameStateKey.SONG.name(), Song.class);
+            Difficulty d = prefsManager.retrieveObject(GameStateKey.DIFFICULTY.name(), Difficulty.class);
             songleMap = new SongleMap(song, markerInfos, mMap, d, this, foundWords);
             Log.d(TAG, "Restoring SongleMap with song: " + song.getNumber() + "\t" + song.getTitle());
         }
