@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import colinparrott.com.songle.game.obj.GameStateKey;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.menu.MainActivity;
 import colinparrott.com.songle.storage.UserPrefsManager;
@@ -81,7 +82,7 @@ public class CorrectGuessTest {
         else
         {
             UserPrefsManager u = new UserPrefsManager(mActivityTestRule.getActivity().getApplicationContext());
-            chosenSong = u.retrieveObject("song", Song.class);
+            chosenSong = u.retrieveObject(GameStateKey.SONG.name(), Song.class);
         }
 
         // Click guess button

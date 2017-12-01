@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import colinparrott.com.songle.game.obj.GameStateKey;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.menu.MainActivity;
 import colinparrott.com.songle.progress.ProgressActivity;
@@ -54,13 +55,7 @@ public class ProgressCorrectGuessTest {
         Espresso.closeSoftKeyboard();
 
         ViewInteraction button = onView(
-                allOf(withId(R.id.btn_Completed), withText("Progress"),
-                        childAtPosition(
-                                allOf(withId(R.id.constraint_layout),
-                                        childAtPosition(
-                                                withId(android.R.id.content),
-                                                0)),
-                                1),
+                allOf(withId(R.id.btn_Completed),
                         isDisplayed()));
         button.perform(click());
 
@@ -101,7 +96,7 @@ public class ProgressCorrectGuessTest {
         else
         {
             UserPrefsManager u = new UserPrefsManager(mActivityTestRule.getActivity().getApplicationContext());
-            chosenSong = u.retrieveObject("song", Song.class);
+            chosenSong = u.retrieveObject(GameStateKey.SONG.name(), Song.class);
         }
 
         ViewInteraction button3 = onView(
@@ -147,12 +142,6 @@ public class ProgressCorrectGuessTest {
 
         ViewInteraction button4 = onView(
                 allOf(withId(R.id.btn_Completed), withText("Progress"),
-                        childAtPosition(
-                                allOf(withId(R.id.constraint_layout),
-                                        childAtPosition(
-                                                withId(android.R.id.content),
-                                                0)),
-                                1),
                         isDisplayed()));
         button4.perform(click());
 

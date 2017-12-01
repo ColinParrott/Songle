@@ -52,13 +52,7 @@ public class InitialProgressActivityTest {
 
         // Hit progress button
         ViewInteraction button = onView(
-                allOf(withId(R.id.btn_Completed), withText("Progress"),
-                        childAtPosition(
-                                allOf(withId(R.id.constraint_layout),
-                                        childAtPosition(
-                                                withId(android.R.id.content),
-                                                0)),
-                                1),
+                allOf(withId(R.id.btn_Completed),
                         isDisplayed()));
         button.perform(click());
 
