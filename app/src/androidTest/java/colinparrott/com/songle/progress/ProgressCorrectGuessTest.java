@@ -1,8 +1,9 @@
-package colinparrott.com.songle;
+package colinparrott.com.songle.progress;
 
 
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -17,10 +18,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import colinparrott.com.songle.R;
 import colinparrott.com.songle.game.obj.GameStateKey;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.menu.MainActivity;
-import colinparrott.com.songle.progress.ProgressActivity;
 import colinparrott.com.songle.storage.UserPrefsManager;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -55,7 +56,7 @@ public class ProgressCorrectGuessTest {
         Espresso.closeSoftKeyboard();
 
         ViewInteraction button = onView(
-                allOf(withId(R.id.btn_Completed),
+                allOf(ViewMatchers.withId(R.id.btn_Completed),
                         isDisplayed()));
         button.perform(click());
 

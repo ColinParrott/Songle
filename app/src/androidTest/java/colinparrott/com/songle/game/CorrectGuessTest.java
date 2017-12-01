@@ -1,8 +1,9 @@
-package colinparrott.com.songle;
+package colinparrott.com.songle.game;
 
 
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -17,7 +18,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import colinparrott.com.songle.R;
+import colinparrott.com.songle.game.obj.GameStateKey;
+import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.menu.MainActivity;
+import colinparrott.com.songle.storage.UserPrefsManager;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -30,22 +35,26 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
+
+/**
+ * This test makes sure the correct guess dialog appears when the user correctly guesses the song title.
+ */
+
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class IncorrectGuessTest {
+public class CorrectGuessTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
 
     @Test
-    public void incorrectGuessTest()
-    {
+    public void correctGuessTest() {
 
         Espresso.closeSoftKeyboard();
 
         ViewInteraction button = onView(
-                allOf(withId(R.id.btn_Play),
+                allOf(ViewMatchers.withId(R.id.btn_Play),
                         childAtPosition(
                                 allOf(withId(R.id.constraint_layout),
                                         childAtPosition(
@@ -55,15 +64,30 @@ public class IncorrectGuessTest {
                         isDisplayed()));
         button.perform(click());
 
+
+
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(5000);
+            Thread.sleep(7000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        Song chosenSong;
+        // Get chosen song for map
+        if(mActivityTestRule.getActivity().getGameCreator() != null)
+        {
+            chosenSong = mActivityTestRule.getActivity().getGameCreator().getChosenSong();
+        }
+        else
+        {
+            UserPrefsManager u = new UserPrefsManager(mActivityTestRule.getActivity().getApplicationContext());
+            chosenSong = u.retrieveObject(GameStateKey.SONG.name(), Song.class);
+        }
+
+        // Click guess button
         ViewInteraction button2 = onView(
                 allOf(withId(R.id.btn_guess), withText("Guess"),
                         childAtPosition(
@@ -74,6 +98,7 @@ public class IncorrectGuessTest {
                         isDisplayed()));
         button2.perform(click());
 
+        // Enter guess using song object
         ViewInteraction editText = onView(
                 allOf(withId(R.id.edit_guess),
                         childAtPosition(
@@ -82,8 +107,9 @@ public class IncorrectGuessTest {
                                         0),
                                 1),
                         isDisplayed()));
-        editText.perform(replaceText("dsDAS/ASD$23-423ED"), closeSoftKeyboard());
+        editText.perform(replaceText(chosenSong.getTitle()), closeSoftKeyboard());
 
+        // Submit guess
         ViewInteraction appCompatButton = onView(
                 allOf(withId(android.R.id.button1), withText("Guess"),
                         childAtPosition(
@@ -93,15 +119,50 @@ public class IncorrectGuessTest {
                                 3)));
         appCompatButton.perform(scrollTo(), click());
 
+        // Make sure "correct" text appears
         ViewInteraction textView = onView(
-                allOf(withId(R.id.textView), withText("Incorrect!"),
+                allOf(withId(R.id.textView), withText("Correct!"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.custom),
                                         0),
                                 0),
                         isDisplayed()));
-        textView.check(matches(withText("Incorrect!")));
+        textView.check(matches(withText("Correct!")));
+
+        // Check displayed song title is correct
+        ViewInteraction textView2 = onView(
+                allOf(withId(R.id.textViewTitle),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.custom),
+                                        0),
+                                2),
+                        isDisplayed()));
+        textView2.check(matches(withText(chosenSong.getTitle())));
+
+        // Check displayed song artist is correct
+        ViewInteraction textView3 = onView(
+                allOf(withId(R.id.textViewArtist),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.custom),
+                                        0),
+                                4),
+                        isDisplayed()));
+        textView3.check(matches(withText(chosenSong.getArtist())));
+
+        // Check displayed song URL is correct
+        ViewInteraction textView4 = onView(
+                allOf(withId(R.id.textViewURL),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.custom),
+                                        0),
+                                6),
+                        isDisplayed()));
+        textView4.check(matches(withText(chosenSong.getLink())));
+
 
     }
 
