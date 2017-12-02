@@ -122,6 +122,7 @@ public class SongArrayAdapter extends ArrayAdapter<Song>
 
         if(songNums != null)
         {
+            // If song number is in completed list return true
             for (int i : songNums)
             {
                 if (s.getNumber() == i)
@@ -131,6 +132,7 @@ public class SongArrayAdapter extends ArrayAdapter<Song>
             }
         }
 
+        // Reach this statement if we haven't returned true in the for loop (i.e. song not in completed list)
         return false;
     }
 

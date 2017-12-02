@@ -103,7 +103,8 @@ public class ProgressActivity extends Activity
 
         // Get switch and create change listener for it
         Switch sortSwitch = (Switch) findViewById(R.id.switchSort);
-        sortSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        sortSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
             {

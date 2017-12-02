@@ -39,7 +39,6 @@ public class UserPrefsManager
      */
     private static final String GAME_IN_PROGRESS_KEY = "in_progress";
 
-
     /**
      * The key used for storing all data
      */
@@ -184,7 +183,7 @@ public class UserPrefsManager
         }
         else
         {
-            Log.e(TAG, key + " NOT CONTAINED IN SHARED PREFS");
+            Log.w(TAG, key + " NOT CONTAINED IN SHARED PREFS");
             return null;
         }
     }

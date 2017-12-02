@@ -71,8 +71,8 @@ public class GameSaveInformation
         ArrayList<SongleMarkerInfo> foundWords = userPrefsManager.retrieveObject(GameStateKey.FOUND_WORDS.name(), gsonListType);
         numFoundWords = foundWords.size();
 
-        ArrayList<SongleMarkerInfo> allMarkers = userPrefsManager.retrieveObject(GameStateKey.MARKER_INFOS.name(), gsonListType);
-        numWordsRemaining = allMarkers.size() - numFoundWords;
+        ArrayList<SongleMarkerInfo> markerInfos = userPrefsManager.retrieveObject(GameStateKey.MARKER_INFOS.name(), gsonListType);
+        numWordsRemaining = markerInfos.size() - numFoundWords;
 
         difficulty = userPrefsManager.retrieveObject(GameStateKey.DIFFICULTY.name(), Difficulty.class);
         playTime = userPrefsManager.retrieveObject(GameStateKey.TIME_PLAYED.name(), long.class);

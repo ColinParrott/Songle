@@ -20,6 +20,7 @@ public class SongsXmlParser
 {
     private static final String ns = null;
 
+
     public List<Song> parse(InputStream in) throws XmlPullParserException, IOException
     {
         try

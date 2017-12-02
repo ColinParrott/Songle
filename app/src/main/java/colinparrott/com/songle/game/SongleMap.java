@@ -16,10 +16,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import colinparrott.com.songle.R;
+import colinparrott.com.songle.game.obj.GameStateKey;
 import colinparrott.com.songle.game.obj.Song;
 import colinparrott.com.songle.game.obj.SongleMarkerInfo;
 import colinparrott.com.songle.game.obj.WordImportance;
@@ -143,23 +145,25 @@ public class SongleMap
             foundWords = new ArrayList<>();
         }
 
-
-        prefsManager = new UserPrefsManager(mapActivity.getApplicationContext());
-
         for(SongleMarkerInfo info : markerInfos)
         {
-            Marker m = map.addMarker(new MarkerOptions()
-                    .position(info.getLatLng())
-                    .title(formatDescription(info.getImportance()))
-                    .icon(BitmapDescriptorFactory.fromResource(determineMarkerIcon(info.getImportance()))));
+            // Only markers to map if they haven't been found before (needed for when a game is resumed)
+            if(!markerInFoundWords(info))
+            {
+                Marker m = map.addMarker(new MarkerOptions()
+                        .position(info.getLatLng())
+                        .title(formatDescription(info.getImportance()))
+                        .icon(BitmapDescriptorFactory.fromResource(determineMarkerIcon(info.getImportance()))));
 
-            // Add lyric's information to marker
-            m.setTag(info);
-
-            markers.add(m);
+                // Add lyric's information to marker
+                m.setTag(info);
+                markers.add(m);
+            }
         }
 
-        mapActivity.updateRemainingText(markers.size() - foundWords.size());
+       // mapActivity.updateFoundWordsView();
+        prefsManager = new UserPrefsManager(mapActivity.getApplicationContext());
+        mapActivity.updateRemainingText(markers.size());
 
     }
 
@@ -326,6 +330,46 @@ public class SongleMap
 
         return guess.equals(actualSong);
 
+    }
+
+    /**
+     * Save the necessary information for reloading this map instance in storage
+     */
+    public void saveGameState(boolean leavingGame, long timeOfOnResume, Type markerInfosListType)
+    {
+        UserPrefsManager prefsManager = new UserPrefsManager(mapActivity);
+        prefsManager.saveObject(GameStateKey.SONG.name(), song,  Song.class);
+        prefsManager.saveObject(GameStateKey.MARKER_INFOS.name(), getMarkerInfos(), markerInfosListType);
+        prefsManager.saveObject(GameStateKey.FOUND_WORDS.name(), getFoundWords(), markerInfosListType);
+        prefsManager.saveObject(GameStateKey.DIFFICULTY.name(), getDifficulty(), Difficulty.class);
+
+        if(!leavingGame)
+        {
+            Long timePlayed = prefsManager.retrieveObject(GameStateKey.TIME_PLAYED.name(), long.class);
+
+            if (timePlayed == null) {
+                timePlayed = 0L;
+            }
+
+            long newTimePlayed = timePlayed + (System.currentTimeMillis() - timeOfOnResume);
+
+            prefsManager.saveObject(GameStateKey.TIME_PLAYED.name(), newTimePlayed, long.class);
+            prefsManager.saveObject(GameStateKey.TIME_OF_LAST_SAVE.name(), System.currentTimeMillis(), long.class);
+            Log.d(TAG, "Time played: " + newTimePlayed + "ms.");
+        }
+    }
+
+    private boolean markerInFoundWords(SongleMarkerInfo info)
+    {
+        for(SongleMarkerInfo i : foundWords)
+        {
+            if(i.getLyricPointer().getLineNumber() == info.getLyricPointer().getLineNumber() && i.getLyricPointer().getWordNumber() == info.getLyricPointer().getWordNumber())
+            {
+                return  true;
+            }
+        }
+
+        return false;
     }
 
     /**

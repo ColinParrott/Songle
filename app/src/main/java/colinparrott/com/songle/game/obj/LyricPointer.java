@@ -48,4 +48,5 @@ public class LyricPointer
     {
         return lineNumber + ":" + wordNumber;
     }
+
 }

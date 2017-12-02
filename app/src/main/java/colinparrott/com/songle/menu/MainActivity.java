@@ -218,6 +218,79 @@ public class MainActivity extends Activity
 
     }
 
+    @Override
+    protected void onResume()
+    {
+        // Hide progress whenever we resume to this activity (i.e. after coming back from a map)
+        progressBar.setVisibility(View.INVISIBLE);
+
+        // Change button text depending on if the user can resume a previous game or not
+        Button playButton = (Button) findViewById(R.id.btn_Play);
+        diffBar = (SeekBar) findViewById(R.id.diffSeek);
+        TextView diffMsg = (TextView) findViewById(R.id.textView5);
+        TextView desc = (TextView) findViewById(R.id.txt_DifficultyDesc);
+
+        // Update UI depending on if there's a game instance that can be resumed or not
+        if(gameInProgress())
+        {
+            playButton.setText(getString(R.string.btntxt_Resume));
+
+            // Hide difficulty slider & description, show clear button
+            diffBar.setVisibility(View.INVISIBLE);
+            desc.setVisibility(View.INVISIBLE);
+            clearButton.setVisibility(View.VISIBLE);
+            saveInfoButton.setVisibility(View.VISIBLE);
+
+            final Difficulty d = new UserPrefsManager(this).retrieveObject(GameStateKey.DIFFICULTY.name(), Difficulty.class);
+            updateDifficultyText(d);
+
+            diffMsg.setText(getString(R.string.txt_ResumeDifficulty));
+
+
+        }
+        else
+        {
+            playButton.setText(getString(R.string.btntxt_Play));
+
+            // Hide clear button, show difficulty slider and description
+            clearButton.setVisibility(View.INVISIBLE);
+            saveInfoButton.setVisibility(View.INVISIBLE);
+            diffBar.setVisibility(View.VISIBLE);
+            desc.setVisibility(View.VISIBLE);
+
+            diffMsg.setText(getString(R.string.txt_ChooseDifficulty));
+            updateDifficultyText(getDifficulty(diffBar.getProgress()));
+        }
+
+        super.onResume();
+    }
+
+
+    // Stop user going back into a map after they've completed it
+    @Override
+    public void onBackPressed()
+    {
+        String caller = getIntent().getStringExtra("calling_activity");
+        System.out.println("CALLER: " + caller);
+
+        // Only go back if the calling activity wasn't the MapsActivity on song completion (MapsActivity doesn't pass an intent when user gives up)
+        if (caller != null) {
+            if (!caller.equals("MapsActivity")) {
+                super.onBackPressed();
+            }
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
+
+    /**
+     * Displays AlertDialog showing information about saved game:
+     * Number of found words
+     * Number of words (markers) left to find
+     * Time spent playing the map
+     * Time progress was last saved
+     */
     private void displaySaveInfo()
     {
         // Create and display prompt
@@ -288,71 +361,6 @@ public class MainActivity extends Activity
                 diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorVeryHard), PorterDuff.Mode.MULTIPLY);
                 txtDesc.setText(R.string.txt_VeryHardDesc);
                 break;
-        }
-    }
-
-    @Override
-    protected void onResume()
-    {
-        // Hide progress whenever we resume to this activity (i.e. after coming back from a map)
-        progressBar.setVisibility(View.INVISIBLE);
-
-        // Change button text depending on if the user can resume a previous game or not
-        Button playButton = (Button) findViewById(R.id.btn_Play);
-        diffBar = (SeekBar) findViewById(R.id.diffSeek);
-        TextView diffMsg = (TextView) findViewById(R.id.textView5);
-        TextView desc = (TextView) findViewById(R.id.txt_DifficultyDesc);
-
-        // Update UI depending on if there's a game instance that can be resumed or not
-        if(gameInProgress())
-        {
-            playButton.setText(getString(R.string.btntxt_Resume));
-
-            // Hide difficulty slider & description, show clear button
-            diffBar.setVisibility(View.INVISIBLE);
-            desc.setVisibility(View.INVISIBLE);
-            clearButton.setVisibility(View.VISIBLE);
-            saveInfoButton.setVisibility(View.VISIBLE);
-
-            final Difficulty d = new UserPrefsManager(this).retrieveObject(GameStateKey.DIFFICULTY.name(), Difficulty.class);
-            updateDifficultyText(d);
-
-            diffMsg.setText(getString(R.string.txt_ResumeDifficulty));
-
-
-        }
-        else
-        {
-            playButton.setText(getString(R.string.btntxt_Play));
-
-            // Hide clear button, show difficulty slider and description
-            clearButton.setVisibility(View.INVISIBLE);
-            saveInfoButton.setVisibility(View.INVISIBLE);
-            diffBar.setVisibility(View.VISIBLE);
-            desc.setVisibility(View.VISIBLE);
-
-            diffMsg.setText(getString(R.string.txt_ChooseDifficulty));
-            updateDifficultyText(getDifficulty(diffBar.getProgress()));
-        }
-
-        super.onResume();
-    }
-
-    // Stop user going back into a map after they've completed it
-    @Override
-    public void onBackPressed()
-    {
-        String caller = getIntent().getStringExtra("calling_activity");
-        System.out.println("CALLER: " + caller);
-
-        // Only go back if the calling activity wasn't the MapsActivity on song completion (MapsActivity doesn't pass an intent when user gives up)
-        if (caller != null) {
-            if (!caller.equals("MapsActivity")) {
-                super.onBackPressed();
-            }
-        }
-        else {
-            super.onBackPressed();
         }
     }
 
@@ -546,7 +554,6 @@ public class MainActivity extends Activity
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-
 
 
     /**

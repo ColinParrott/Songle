@@ -157,9 +157,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private UserPrefsManager prefsManager;
 
     /**
-     * To be used with GSON library when storing/retrieving serialised lists for markerInfos and foundWords
+     * To be used with GSON library when storing/retrieving serialised lists for foundWords and markerInfos
      */
-    private static Type gsonListType = new TypeToken<List<SongleMarkerInfo>>(){}.getType();
+    private static Type gsonMarkerInfosListType = new TypeToken<List<SongleMarkerInfo>>(){}.getType();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -227,23 +227,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    /**
-     * Set up the spinner for selecting the sort method when viewing found words
-     */
-    private void setupSpinner()
-    {
-
-        List<String> categories = new ArrayList<String>();
-
-        categories.add(getString(R.string.txt_SortAlphabetical));
-        categories.add(getString(R.string.txt_SortImportance));
-        categories.add(getString(R.string.txt_SortSongOccurs));
-
-        // Set spinner's contents
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, R.layout.songle_spinner_item, categories);
-        sortSpinner.setAdapter(dataAdapter);
-    }
-
     @Override
     protected void onStart()
     {
@@ -267,8 +250,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
         super.onResume();
         Log.d(TAG, "onResume()");
-
-
         timeOfOnResume = System.currentTimeMillis();
     }
 
@@ -279,38 +260,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d(TAG, "onPause()");
 
         // Save current game state
-        saveGameState();
+        songleMap.saveGameState(leavingGame, timeOfOnResume, gsonMarkerInfosListType);
     }
 
     /**
-     * Save the necessary information for reloading this map instance in storage
+     * Set up the spinner for selecting the sort method when viewing found words
      */
-    private void saveGameState()
+    private void setupSpinner()
     {
-        if(songleMap != null)
-        {
-            UserPrefsManager prefsManager = new UserPrefsManager(this);
-            prefsManager.saveObject(GameStateKey.MARKER_INFOS.name(), songleMap.getMarkerInfos(), gsonListType);
-            prefsManager.saveObject(GameStateKey.SONG.name(), song,  Song.class);
-            prefsManager.saveObject(GameStateKey.FOUND_WORDS.name(), songleMap.getFoundWords(), gsonListType);
-            prefsManager.saveObject(GameStateKey.DIFFICULTY.name(), songleMap.getDifficulty(), Difficulty.class);
 
-            if(!leavingGame)
-            {
-                Long timePlayed = prefsManager.retrieveObject(GameStateKey.TIME_PLAYED.name(), long.class);
+        List<String> categories = new ArrayList<String>();
 
-                if (timePlayed == null) {
-                    timePlayed = 0L;
-                }
+        categories.add(getString(R.string.txt_SortAlphabetical));
+        categories.add(getString(R.string.txt_SortImportance));
+        categories.add(getString(R.string.txt_SortSongOccurs));
 
-                long newTimePlayed = timePlayed + (System.currentTimeMillis() - timeOfOnResume);
-
-                prefsManager.saveObject(GameStateKey.TIME_PLAYED.name(), newTimePlayed, long.class);
-                prefsManager.saveObject(GameStateKey.TIME_OF_LAST_SAVE.name(), System.currentTimeMillis(), long.class);
-                Log.d(TAG, "Time played: " + newTimePlayed + "ms.");
-            }
-        }
+        // Set spinner's contents
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, R.layout.songle_spinner_item, categories);
+        sortSpinner.setAdapter(dataAdapter);
     }
+
 
     /**
      * Displays a dialog telling user their guess was correct along with
@@ -585,7 +554,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
     // Override back button to ask user if they want to save and quit, wipe progress and quit or resume
     @Override
     public void onBackPressed()
@@ -815,8 +783,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Retrieve stored game data if we're resuming a previous game instance
         else
         {
-            ArrayList<SongleMarkerInfo> markerInfos = prefsManager.retrieveObject(GameStateKey.MARKER_INFOS.name(), gsonListType);
-            ArrayList<SongleMarkerInfo> foundWords = prefsManager.retrieveObject(GameStateKey.FOUND_WORDS.name(), gsonListType);
+            ArrayList<SongleMarkerInfo> markerInfos = prefsManager.retrieveObject(GameStateKey.MARKER_INFOS.name(), gsonMarkerInfosListType);
+            ArrayList<SongleMarkerInfo> foundWords = prefsManager.retrieveObject(GameStateKey.FOUND_WORDS.name(), gsonMarkerInfosListType);
             song = prefsManager.retrieveObject(GameStateKey.SONG.name(), Song.class);
             Difficulty d = prefsManager.retrieveObject(GameStateKey.DIFFICULTY.name(), Difficulty.class);
             songleMap = new SongleMap(song, markerInfos, mMap, d, this, foundWords);

@@ -36,14 +36,13 @@ public class GameCreator
      */
     private Context mainContext;
 
-
     /**
      * Identifier to use with the Intent for passing the selected song number to the MapsActivity
      */
     public static final String SONG_MSG = "com.songle.gamecreator.SONG";
 
     /**
-     *
+     * Identifier to use with Intent for passing difficulty to MapsActivity
      */
     public static final String DIFFICULTY_MSG = "com.songle.gamecreator.DIFFICULTY";
 
