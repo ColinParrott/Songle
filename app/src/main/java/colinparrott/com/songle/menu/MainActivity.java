@@ -394,6 +394,7 @@ public class MainActivity extends Activity
         {
             Log.w(TAG, "Location permission NOT granted. Asking for permission and displaying settings text link.");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            progressBar.setVisibility(View.VISIBLE);
         }
         else
             {
