@@ -29,6 +29,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
+/**
+ * Tests UI for creating a new game, saving and viewing saved game information dialog
+ */
+
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class SaveGameAndViewInfoUICorrect {

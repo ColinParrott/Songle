@@ -7,9 +7,7 @@ import colinparrott.com.songle.game.parsers.LyricsParser;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by Colin on 07/11/2017.
- */
+
 public class LyricsParserTest
 {
     // Tests correct lyric is obtained

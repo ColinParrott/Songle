@@ -16,9 +16,7 @@ import colinparrott.com.songle.game.obj.WordImportance;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by Colin on 07/11/2017.
- */
+
 public class SongleMapTest
 {
     private static List<SongleMarkerInfo> infos = new ArrayList<SongleMarkerInfo>();

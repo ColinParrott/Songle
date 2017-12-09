@@ -14,9 +14,7 @@ import colinparrott.com.songle.game.obj.Song;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by Colin on 25/11/2017.
- */
+
 public class ProgressActivityTest
 {
 
