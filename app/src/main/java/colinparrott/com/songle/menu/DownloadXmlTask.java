@@ -21,7 +21,6 @@ public class DownloadXmlTask extends AsyncTask<String, Void, String>
 {
 
     private static final String TAG = "DownloadXmlTask";
-    private String fileName;
 
     // TaskListener allows for callback
     public interface TaskListener
@@ -73,8 +72,10 @@ public class DownloadXmlTask extends AsyncTask<String, Void, String>
 
         String result = null;
 
+
         try(InputStream stream = downloadUrl(urlString))
         {
+            // Convert InputStream to String
             result = IOUtils.toString(stream);
         }
 

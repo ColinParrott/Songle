@@ -190,12 +190,21 @@ public class ProgressActivity extends Activity
         return songs;
     }
 
+    /**
+     * Check whether a song is completed
+     * @param s Song to check
+     * @return True if completed; false otherwise
+     */
     public boolean isCompleted(Song s)
     {
         return listAdapter.songCompleted(s);
     }
 
 
+    /**
+     * Testing method
+     * @return Number of songs
+     */
     @VisibleForTesting
     public int getNumberOfSongs()
     {

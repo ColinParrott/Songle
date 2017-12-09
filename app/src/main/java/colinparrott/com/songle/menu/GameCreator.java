@@ -149,6 +149,10 @@ public class GameCreator
         mainContext.startActivity(intent);
     }
 
+    /**
+     * Testing method for getting chosen Song
+     * @return Chosen song
+     */
     @VisibleForTesting
     public Song getChosenSong()
     {

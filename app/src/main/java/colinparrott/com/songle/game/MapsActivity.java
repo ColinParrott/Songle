@@ -263,6 +263,189 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         songleMap.saveGameState(leavingGame, timeOfOnResume, gsonMarkerInfosListType);
     }
 
+    // Override back button to ask user if they want to save and quit, wipe progress and quit or resume
+    @Override
+    public void onBackPressed()
+    {
+        Log.d(TAG, "Back pressed");
+
+        LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
+        final View prompt = layoutInflater.inflate(R.layout.dialog_quit_map, null);
+        AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
+        promptBuilder.setView(prompt);
+
+        final Button saveButton = (Button) prompt.findViewById(R.id.btnSave);
+        final Button resetButton = (Button) prompt.findViewById(R.id.btnReset);
+        final Button resumeButton = (Button) prompt.findViewById(R.id.btnResume);
+
+        final AlertDialog alertDialog = promptBuilder.create();
+        final Activity mapsActivity = this;
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener()
+        {
+            // Quit (leaving in-progress boolean unchanged (true) so that we resume this instance next time)
+            @Override
+            public void onShow(final DialogInterface dialog)
+            {
+                saveButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        alertDialog.dismiss();
+                        MapsActivity.super.onBackPressed();
+                    }
+                });
+
+                // Display reset confirmation dialog
+                resetButton.setOnClickListener(new View.OnClickListener()
+                {
+
+                    @Override
+                    public void onClick(View v)
+                    {
+                        displayResetConfirmationDialog(alertDialog);
+                    }
+                });
+
+                // Close dialog
+                resumeButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        alertDialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        alertDialog.show();
+
+    }
+
+
+    protected void createLocationRequest()
+    {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        int permissionsCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (permissionsCheck == PackageManager.PERMISSION_GRANTED)
+        {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
+    }
+
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap)
+    {
+        mMap = googleMap;
+
+        // Show user location if we have permission; if not ask for it
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED )
+        {
+            mMap.setMyLocationEnabled(true);
+        }
+        else
+        {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+
+        // Move map camera to default position close to University buildings where KML maps are based around
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLat, defaultLong), 18f));
+
+        // Unwrap difficulty and load map with it
+        Intent i = getIntent();
+        Difficulty d = (Difficulty) i.getSerializableExtra(GameCreator.DIFFICULTY_MSG);
+        loadGameMapData(d);
+
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint)
+    {
+        try
+        {
+            createLocationRequest();
+        }
+        catch(java.lang.IllegalStateException ise)
+        {
+            System.out.println("IllegalStateException thrown [onConnected]");
+        }
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        }
+        else
+        {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int flag)
+    {
+        System.out.println(">>>> onConnectionSuspended");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult)
+    {
+        System.out.println(">>>> onConnectionFailed");
+
+        // Show dialog forcing user to go back to main menu since we've hit an unrecoverable error
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        builder.setCancelable(false);
+        builder.setTitle("An unresolvable error has occurred");
+        builder.setMessage("You will be returned to the main menu.");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                MapsActivity.super.onBackPressed();
+            }
+        });
+
+        builder.show();
+    }
+
+    @Override
+    public void onLocationChanged(Location current)
+    {
+        System.out.println("[onLocationChanged] Lat/long now: (" + String.valueOf(current.getLatitude()) + "," + String.valueOf(current.getLongitude()) + ")" );
+        mLastLocation = current;
+
+        // If we haven't set the initial location move the camera to the user's location
+        if(!setInitialLocation)
+        {
+            LatLng currentLatLng = new LatLng(current.getLatitude(), current.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 18f));
+            setInitialLocation = true;
+        }
+
+        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+
+        // Call songleMap to update map
+        songleMap.update(latLng);
+
+    }
+
+
     /**
      * Set up the spinner for selecting the sort method when viewing found words
      */
@@ -328,16 +511,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    /**
-     * Loads main menu activity
-     */
-    private void loadMenu()
-    {
-        // Add intent so that MainActivity knows it was started by this activity
-        Intent goToMenu = new Intent(getApplicationContext(), MainActivity.class);
-        goToMenu.putExtra("calling_activity", "MapsActivity");
-        startActivity(goToMenu);
-    }
 
     /**
      * Displays dialog showing words user has found
@@ -394,6 +567,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         setupSpinner();
         populateListView(wordsPrompt, sortCategory.ALPHABETICAL);
+    }
+
+
+    /**
+     * Loads main menu activity
+     */
+    private void loadMenu()
+    {
+        // Add intent so that MainActivity knows it was started by this activity
+        Intent goToMenu = new Intent(getApplicationContext(), MainActivity.class);
+        goToMenu.putExtra("calling_activity", "MapsActivity");
+        startActivity(goToMenu);
     }
 
     /**
@@ -554,65 +739,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    // Override back button to ask user if they want to save and quit, wipe progress and quit or resume
-    @Override
-    public void onBackPressed()
-    {
-        Log.d(TAG, "Back pressed");
-
-        LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
-        final View prompt = layoutInflater.inflate(R.layout.dialog_quit_map, null);
-        AlertDialog.Builder promptBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
-        promptBuilder.setView(prompt);
-
-        final Button saveButton = (Button) prompt.findViewById(R.id.btnSave);
-        final Button resetButton = (Button) prompt.findViewById(R.id.btnReset);
-        final Button resumeButton = (Button) prompt.findViewById(R.id.btnResume);
-
-        final AlertDialog alertDialog = promptBuilder.create();
-        final Activity mapsActivity = this;
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener()
-        {
-            // Quit (leaving in-progress boolean unchanged (true) so that we resume this instance next time)
-            @Override
-            public void onShow(final DialogInterface dialog)
-            {
-                saveButton.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        alertDialog.dismiss();
-                        MapsActivity.super.onBackPressed();
-                    }
-                });
-
-                // Display reset confirmation dialog
-                resetButton.setOnClickListener(new View.OnClickListener()
-                {
-
-                    @Override
-                    public void onClick(View v)
-                    {
-                        displayResetConfirmationDialog(alertDialog);
-                    }
-                });
-
-                // Close dialog
-                resumeButton.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        alertDialog.dismiss();
-                    }
-                });
-            }
-        });
-
-        alertDialog.show();
-
-    }
 
     /**
      * Dialog that pop ups to make sure the user actually wants to reset their progress
@@ -645,127 +771,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setNegativeButton(getString(R.string.txt_NoReset), null);
 
         builder.show();
-    }
-
-    protected void createLocationRequest()
-    {
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);
-        mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        int permissionsCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-
-        if (permissionsCheck == PackageManager.PERMISSION_GRANTED)
-        {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
-    }
-
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
-    public void onMapReady(GoogleMap googleMap)
-    {
-        mMap = googleMap;
-
-        // Show user location if we have permission; if not ask for it
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED )
-        {
-            mMap.setMyLocationEnabled(true);
-        }
-        else
-        {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
-
-        // Move map camera to default position close to University buildings where KML maps are based around
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(defaultLat, defaultLong), 18f));
-
-        // Unwrap difficulty and load map with it
-        Intent i = getIntent();
-        Difficulty d = (Difficulty) i.getSerializableExtra(GameCreator.DIFFICULTY_MSG);
-        loadGameMapData(d);
-
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint)
-    {
-        try
-        {
-            createLocationRequest();
-        }
-        catch(java.lang.IllegalStateException ise)
-        {
-            System.out.println("IllegalStateException thrown [onConnected]");
-        }
-
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-        {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        }
-        else
-        {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int flag)
-    {
-        System.out.println(">>>> onConnectionSuspended");
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult)
-    {
-        System.out.println(">>>> onConnectionFailed");
-
-        // Show dialog forcing user to go back to main menu since we've hit an unrecoverable error
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
-        builder.setCancelable(false);
-        builder.setTitle("An unresolvable error has occurred");
-        builder.setMessage("You will be returned to the main menu.");
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                MapsActivity.super.onBackPressed();
-            }
-        });
-
-        builder.show();
-    }
-
-    @Override
-    public void onLocationChanged(Location current)
-    {
-        System.out.println("[onLocationChanged] Lat/long now: (" + String.valueOf(current.getLatitude()) + "," + String.valueOf(current.getLongitude()) + ")" );
-        mLastLocation = current;
-
-        // If we haven't set the initial location move the camera to the user's location
-        if(!setInitialLocation)
-        {
-            LatLng currentLatLng = new LatLng(current.getLatitude(), current.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 18f));
-            setInitialLocation = true;
-        }
-
-        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-
-        // Call songleMap to update map
-        songleMap.update(latLng);
-
     }
 
     /**

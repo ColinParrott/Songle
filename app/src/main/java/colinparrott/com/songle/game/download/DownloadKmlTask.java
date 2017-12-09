@@ -52,9 +52,6 @@ public class DownloadKmlTask extends AsyncTask<String, Void, String>
 
     private String loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException
     {
-//        StringBuilder result = new StringBuilder();
-//        List<Song> songList = null;
-
 
         try(InputStream stream = downloadUrl(urlString))
         {

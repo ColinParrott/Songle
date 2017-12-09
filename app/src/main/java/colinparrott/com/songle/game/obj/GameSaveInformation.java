@@ -99,22 +99,42 @@ public class GameSaveInformation
         return formatter.format(lastSaveTime);
     }
 
+    /**
+     * Gets number of founds words in saved instance
+     * @return Number of found words
+     */
     public int getNumFoundWords() {
         return numFoundWords;
     }
 
+    /**
+     * Gets number of words left to be found in saved instance
+     * @return Number of words left to be found
+     */
     public int getNumWordsRemaining() {
         return numWordsRemaining;
     }
 
+    /**
+     * Gets difficulty saved game was created on
+     * @return Difficulty of saved instance
+     */
     public Difficulty getDifficulty() {
         return difficulty;
     }
 
+    /**
+     * Gets the time played of the saved instance in milliseconds
+     * @return Time played (milliseconds)
+     */
     public long getPlayTime() {
         return playTime;
     }
 
+    /**
+     * Gets the epoch time the game was last saved
+     * @return Epoch time of last save (milliseconds)
+     */
     public long getLastSaveTime() {
         return lastSaveTime;
     }

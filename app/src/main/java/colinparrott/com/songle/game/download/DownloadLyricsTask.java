@@ -49,8 +49,6 @@ public class DownloadLyricsTask extends AsyncTask<String, Void, String>
 
     private String loadLyricsFromNetwork(String urlString) throws XmlPullParserException, IOException
     {
-        StringBuilder result = new StringBuilder();
-
 
         try(InputStream stream = downloadUrl(urlString))
         {

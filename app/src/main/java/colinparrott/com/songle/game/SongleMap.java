@@ -267,11 +267,6 @@ public class SongleMap
         }
     }
 
-    public ArrayList<SongleMarkerInfo> getFoundWords()
-    {
-        return foundWords;
-    }
-
     /**
      * Gets the word importance in a clean, readable string
      * @param desc Importance of word
@@ -359,13 +354,19 @@ public class SongleMap
         }
     }
 
+    /**
+     * Check whether a marker (word) has been found before
+     * @param info MarkerInfo (word) to check
+     * @return True if in found words list; false otherwise
+     */
     private boolean markerInFoundWords(SongleMarkerInfo info)
     {
         for(SongleMarkerInfo i : foundWords)
         {
+            // Check if there's a MarkerInfo with the exact same line and word number in the foundWordsList - these 2 properties uniquely identify a word in a song
             if(i.getLyricPointer().getLineNumber() == info.getLyricPointer().getLineNumber() && i.getLyricPointer().getWordNumber() == info.getLyricPointer().getWordNumber())
             {
-                return  true;
+                return true;
             }
         }
 
@@ -387,6 +388,17 @@ public class SongleMap
                 .trim(); // Trim should be unneeded but no harm
     }
 
+
+    /**
+     * Get the list of SongleMarkerInfos that have been found
+     * @return List of found SongleMarkerInfos
+     */
+    public ArrayList<SongleMarkerInfo> getFoundWords()
+    {
+        return foundWords;
+    }
+
+
     /**
      * Get difficulty of this map
      * @return The difficulty
@@ -395,18 +407,30 @@ public class SongleMap
         return difficulty;
     }
 
+    /**
+     * Testing method to obtain the markers
+     * @return The markers on the map
+     */
     @VisibleForTesting
     public ArrayList<Marker> getMarkers()
     {
         return markers;
     }
 
+    /**
+     * Get the song this map is for
+     * @return Song of map
+     */
     @VisibleForTesting
     public Song getSong()
     {
         return song;
     }
 
+    /**
+     * Get the list of all SongleMarkerInfos passed to this SongleMap
+     * @return List of all SongleMarkerInfos
+     */
     public ArrayList<SongleMarkerInfo> getMarkerInfos() {
         return markerInfos;
     }

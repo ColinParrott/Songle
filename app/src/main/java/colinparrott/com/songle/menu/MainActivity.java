@@ -52,7 +52,6 @@ public class MainActivity extends Activity
      */
     private ProgressBar progressBar;
 
-
     /**
      * Tag for debugging
      */
@@ -79,6 +78,11 @@ public class MainActivity extends Activity
     private Button clearButton;
 
     /**
+     * Button to play/resume a game
+     */
+    private Button playButton;
+
+    /**
      * Button to view save info
      */
     private Button saveInfoButton;
@@ -100,16 +104,31 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Lock to portrait for design reasons
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        progressBar = (ProgressBar) findViewById(R.id.progBar);
+        // Set UI Elements and their listener functionality
+        setUIElements();
+        setUIElementListeners();
+    }
 
-        // Get play button
-        Button playButton = (Button) findViewById(R.id.btn_Play);
+    /**
+     * Finds the necessary UI elements and assigns them to their respective variables
+     */
+    private void setUIElements()
+    {
+        progressBar = (ProgressBar) findViewById(R.id.progBar);
+        playButton = (Button) findViewById(R.id.btn_Play);
         clearButton = (Button) findViewById(R.id.btn_ClearSave);
         saveInfoButton = (Button) findViewById(R.id.btn_ViewInfo);
+        diffBar = (SeekBar) findViewById(R.id.diffSeek);
+    }
 
-
+    /**
+     * Implements functionality for UI elements
+     */
+    private void setUIElementListeners()
+    {
         // Start a game instance on play button click
         playButton.setOnClickListener(new View.OnClickListener()
         {
@@ -174,18 +193,17 @@ public class MainActivity extends Activity
         // Set up progress button for loading CompletedActivity
         Button completedButton = (Button) findViewById(R.id.btn_Completed);
         completedButton.setOnClickListener(new View.OnClickListener()
-                                           {
-                                               @Override
-                                               public void onClick(View v)
-                                               {
-                                                   Log.d(TAG, "Completed button clicked");
-                                                   Intent intent = new Intent(MainActivity.super.getApplicationContext(), ProgressActivity.class);
-                                                   startActivity(intent);
-                                               }
-                                           });
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Log.d(TAG, "Completed button clicked");
+                Intent intent = new Intent(MainActivity.super.getApplicationContext(), ProgressActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
-        diffBar = (SeekBar) findViewById(R.id.diffSeek);
         diffBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorVeryEasy), PorterDuff.Mode.MULTIPLY);
 
         // Increase slider thumb size and "click" size
@@ -215,7 +233,6 @@ public class MainActivity extends Activity
             }
 
         });
-
     }
 
     @Override
@@ -602,6 +619,10 @@ public class MainActivity extends Activity
         startActivity(i);
     }
 
+    /**
+     * Testing method
+     * @return GameCreaator object used
+     */
     @VisibleForTesting
     public GameCreator getGameCreator()
     {
