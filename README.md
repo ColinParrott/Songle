@@ -1,4 +1,3 @@
 # Songle
 
-Name: Colin Parrott
-Matric: s1546623
+Android application (game) developed for the Software Engineering Large Practical course at the University of Edinburgh.
